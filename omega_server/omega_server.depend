@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1237805749 source:/home/bas/omega/omega_server/main.c
+	<stdio.h>
+	<stdlib.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+
