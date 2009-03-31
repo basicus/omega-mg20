@@ -1,0 +1,1172 @@
+<HTML xmlns:t = 'urn:schemas-microsoft-com:time'>
+
+<head>
+<STYLE>
+body{color:black; font-family: verdana;}
+table{font-size: 11}
+.descr{color:gray; font-style: italic; font-size: 10}
+.acmd_over{color: red; text-decoration: none; cursor: hand}
+.acmd_out{color: blue; text-decoration: underline; cursor: hand}
+.active_tab{background-color: #CDDAF0; cursor: hand; border: 1 solid #316AC5}
+.inactive_tab{bgcolor: white; cursor: hand; border: 1 solid white}
+.mouseover_tab{background-color: #E0E8F6; cursor: hand; border: 1 solid #98B4E2}
+
+.t_help{padding: 3; padding-left: 20px; text-decoration: underline; color: blue; background-repeat: no-repeat; background-position-y: center; text-align: left; cursor: hand; }
+.t_help_body{padding: 3; background-color: lightyellow}
+
+.page_style___{ filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr='#2099FF33',EndColorStr='#20CC3300'); }
+
+.page_style{ FILTER: progid:DXImageTransform.Microsoft.GradientWipe(GradientSize=1.0,wipestyle=0,motion=forward);}
+.tab_style{ FILTER: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr='#2099FF33',EndColorStr='#20CC3300'); }
+.page_body_style{ padding:10; }
+
+
+</STYLE>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"></head>
+
+<BODY onload="SelectPage('table_info','tab_info'); UpdateInputsUI(); PlayFilters()" ondrag="return CheckCancel();" >
+	<TABLE id="microline_logo" WIDTH=980 align=center HEIGHT=140 BORDER=0 CELLSPACING=0 CELLPADDING=0 style="filter:progid:DXImageTransform.Microsoft.Pixelate(MaxSquare=100,Duration=3); visibility: hidden" >
+		<TR>
+			<TD>
+				<a href="http://www.microline.ru/" target=_blank><img border=0 src="img/head.gif" ></a>
+			</TD>
+		</TR>
+	</TABLE>
+	<TABLE WIDTH=980 align=center cellpadding=3 border=0>
+		<TR><TD width=200>&nbsp</TD><TD align=center nowrap><font face="verdana" size=4 color=#A4B97F><b>Омега-MG20: Охрана квартиры</b></font></TD><TD width=200 align=right><img id="ct_save" alt="сохранить профиль" src="img/disk_blue.gif" style="cursor:hand">&nbsp&nbsp&nbsp&nbsp<img id="ct_programming" alt="записать профиль в устройство" src="img/make.gif" style="cursor:hand">&nbsp&nbsp<img id="ct_programming_ex" ct_file="охрана квартиры.psnd" alt="записать файл звуков в устройство" src="img/document_music.gif" style="cursor:hand"></TD></TR>
+	</TABLE>
+	<TABLE style="border: 1 solid #A4B97F" bgColor="ECE9D8" cellSpacing="7" cellPadding="0" width="980" height="670" align="center" border="0" >
+	<!--
+		<TR>
+			<TD colspan=2 align=center>
+				<b>Омега-mg20: ОХРАНА КВАРТИРЫ + ИНФОРМАТОР</b>
+			</TD>
+		</TR>
+	-->
+		<TR>
+			<TD align="center" valign="top" width="110" height="100%" style="border: 1 solid #A4B97F">
+				<DIV STYLE="width: 100%; height: 100%; overflow-x: visible; overflow-y: visible;" >
+					<TABLE width="100%" height="100%" border="0" cellspacing="2" cellpadding="5" bgColor="white">
+						<TBODY align=center>
+							<TR>
+								<TD id="tab_info" onclick="SelectPage('table_info','tab_info')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/info.gif"><br>Общая информация</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD id="tab_inputs" onclick="SelectPage('table_inputs','tab_inputs')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/cpu.gif"><br>Входы</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD id="tab_outputs" onclick="SelectPage('table_outputs','tab_outputs')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/cpu_time.gif"><br>Выходы</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD id="tab_guard_mode" onclick="SelectPage('table_guard_mode','tab_guard_mode')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/shield_yellow.gif"><br>Режим охраны</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD id="tab_sms_control" onclick="SelectPage('table_sms_control','tab_sms_control')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/user1_mobilephone.gif"><br>SMS управление</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD id="tab_dtmf_control" onclick="SelectPage('table_dtmf_control','tab_dtmf_control')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/mobilephone1.gif"><br>DTMF управление</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD id="tab_touch_memory" onclick="SelectPage('table_touch_memory','tab_touch_memory')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/keys.gif"><br>Эл. ключи, термометр</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD id="tab_power" onclick="SelectPage('table_power','tab_power')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/plug.gif"><br>Питание</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD id="tab_internet" onclick="SelectPage('table_internet','tab_internet')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/environment.gif"><br>Интернет</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD id="tab_connect" onclick="SelectPage('table_connect','tab_connect')" onmouseover="TabOver(this)" onmouseout="TabOut(this)">
+									<DIV><IMG vspace=5 alt="" src="img/connect.gif"><br>Схема подключения</DIV>
+								</TD>
+							</TR>
+							<TR>
+								<TD height="100%">
+									&nbsp
+								</TD>
+							</TR>
+						</TBODY>
+					</TABLE>
+				</DIV>
+			</TD>
+			<TD bgcolor="white" BACKGROUND="img/S3700145.jpg" style="border: 1 solid #A4B97F; background-repeat: no-repeat" >
+				<DIV STYLE="width: 100%; height: 100%; overflow-x: visible; overflow-y: visible;">
+					<TABLE id="table_info" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Общая информация</b></font></TD>
+						</TR>
+						<TR valign=top>
+							<TD class="page_body_style" >
+								<b>Профиль Охрана квартиры.</b>
+								<p style="text-align: justify">Данный профиль предназначен для охраны квартиры (совместно с GSM Информатором Омега-MG20).</p>
+								<p style="text-align: justify">Переключаясь по вкладкам введите свои настройки, затем запишите профиль в устройство (картинки-кнопки справа сверху).</p>
+								<p style="text-align: justify">
+									<b>Работа с внешними устройствами</b><br>
+									Команды управления внешними устройствами прописываются в поля "Сообщение в RS-интерфейс". При возникновении события соответствующее ему сообщение отправляется по внутренней сети RS-485. Информатор так же предоставляет доступ к своим функциям для внешних устройств. Команды управления Информатором по RS сети описаны на вкладке подключение.<br>
+								</p>
+
+								<p style="text-align: justify">
+									<b>Входы</b><br>
+									К входам 1, 2, 3, 4, 5, 6 подключаются охранные датчики. Для каждого входа индивидуально выбирается тип датчика и действия которые должны быть выполнены при срабатывании датчика (дозвон, отправка SMS, управление сиреной и лампой). Типы датчиков "Датчик движения без задержки" и "Датчик открывания открывания двери без задержки" используются для входов, которым не нужна задержка перед срабатыванием для снятия с охраны и которые должны контролироваться уже во время постановки на охрану. Настройка производится на вкладке <span class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'" onclick="SelectPage('table_inputs','tab_inputs')" title="Переключиться на вкладку">Входы</span>. 6-ой вход может быть настроен как вход постановки снятия с режима охраны и может функционировать в режиме кнопки или переключаетеля.
+								</p>
+								<p style="text-align: justify">
+									<b>Выходы</b><br>
+									К выходам 1, 2, 3 следует подключить следующие устройства:<br>
+									Выход 1 - Индикатор режима охраны (лампа 12В или светодиод через резистор 2 кОм);<br>
+									Выход 2 - Сирена;<br>
+									Выход 3 - Лампа;<br>
+									Настройка выходов производится на вкладке <span class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'" onclick="SelectPage('table_outputs','tab_outputs')" title="Переключиться на вкладку">Выходы</span>.<br>
+									Выход 3 так же используется как индикатор режима настройки ключей Touch Memory при разрешённом добавлении/удалении ключей.
+								</p>
+								<p style="text-align: justify">
+									<b>Режим охраны</b><br>
+									Постановка снятие с режима охраны может производится:<br>
+									1. Ключём Touch Memory;<br>
+									2. Через голосовое меню посредством DTMF сигналов (в режиме голосого соединения).<br>
+									3. Через 6-ой вход при его соответствующей настройке.<br>
+									На изменение режима охраны можно назначить уведомления через дозвон и (или) SMS, а так же управление сиреной и лампой.<br>
+									Настройка производится на вкладке <span class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'" onclick="SelectPage('table_guard_mode','tab_guard_mode')" title="Переключиться на вкладку">Режим охраны</span>.
+								</p>
+								<p style="text-align: justify">
+									<b>SMS управление</b><br>
+									SMS управление - управление сиреной, лампой, отопителем посредством SMS сообщений. Настройка на вкладке <span class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'" onclick="SelectPage('table_sms_control','tab_sms_control')" title="Переключиться на вкладку">SMS управление</span>.
+								</p>
+								<p style="text-align: justify">
+									<b>DTMF управление (голосовое меню)</b><br>
+									DTMF управление - управление устройством посредством DTMF сигналов в режиме голосового соединения (наподобие сервисной службы сотовых операторов). Руководствуясь голосовыми подсказками можно управлять выходами, узнать текущее состояние входов, запросить баланс карты, включить/выключить режим охраны. Настройка производится на вкладке <span class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'" onclick="SelectPage('table_dtmf_control','tab_dtmf_control')" title="Переключиться на вкладку">DTMF управление</span>.
+									Структура голосового меню:<br>
+									<ul type=circle>
+										<li>Главное меню</li>
+										<ul type=circle>
+											<li>Режим охраны</li>
+											<ul type=circle>
+												<li>Включение</li>
+												<li>Выключение</li>
+											</ul>
+											<li>Выходы</li>
+											<ul type=circle>
+												<li>Выбор выхода</li>
+												<ul type=circle>
+													<LI>Включение</LI>
+													<LI>Выключение</LI>
+												</ul>
+											</ul>
+											<li>Входы</li>
+											<ul type=circle>
+												<li>Состояние входов</li>
+											</ul>
+											<li>Получение баланса сим карты</li>
+										</ul>
+									</ul>
+									Для перехода из вложенных меню в главное следует нажать '#'.<br>
+									При дозвоне Информатора в случае тревоги можно так же попасть в главное меню нажав '#'.<br>
+								</p>
+								<p style="text-align: justify">
+									<b>Touch Memory (электронные ключи)</b><br>
+									Встроенный контроллер Touch Memory позволяет запомнить до 60 электронных ключей. Очистка памяти контроллера, запрет и разрешение добавления новых ключей производится на вкладке <span class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'" onclick="SelectPage('table_touch_memory','tab_touch_memory')" title="Переключиться на вкладку">Touch Memory</span>. Вместо использования считывателя Touch memory можно подключить цифровой термометр DS18S20. При этом Информатор может осуществлять контроль нахождения температуры в заданном диапазоне и выполнять информирование или управление выходами при выходе температуры из диапазона.
+								</p>
+								<p style="text-align: justify">
+									<b>Питание</b><br>
+									Настройка уведомлений (дозвон, SMS) о пропадании/появлении основного питания.
+									Настройка производится на вкладке <span class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'" onclick="SelectPage('table_power','tab_power')" title="Переключиться на вкладку">Питание</span>.
+								</p>
+								<p style="text-align: justify">
+									<b>Интернет</b><br>
+									Это вкладка для настройки параметров подключения к сети Интернет через GPRS. А так же для настройки адреса электронной почты и темы письма, которые используются при отправке фотографий с подключаемых фотокамер.
+								</p>
+								<p style="text-align: justify">
+									<b>Подключение</b><br>
+									Схема подключения устройства и описание подключения на вкладке <span class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'" onclick="SelectPage('table_connect','tab_connect')" title="Переключиться на вкладку">Подключение</span>.
+								</p>
+								<br><br><br><br><br>
+							</TD>
+						</TR>
+					</TABLE>
+					<TABLE id="table_sms_control" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Настройка SMS управления</b></font></TD>
+							<TR valign=top>
+								<TD class="page_body_style">
+									<div noWrap>Пароль для СМС управления<br></div><INPUT id="ф_Пароль_для_СМС_управления" type="text" size="60" maxlength="30"><br><br>
+									<div noWrap>Номера с которых разрешено управление<br><span class="descr">один или несколько через запятую</span></div><INPUT id="Ф_Номера_с_разрешённым_СМС_управлением" type="text" size="60" maxlength="200"><br><br>
+									Доступ для разрешённых номеров <br><SELECT id="Доступ_СМС_с_разрешённых_номеров_без_пароля" SIZE="1" onchange="UpdateIButtonUI();"><OPTION VALUE="1">Разрешён без пароля</OPTION><OPTION VALUE="0">Разрешён только по паролю</OPTION></SELECT><br><br>
+									Доступ для неразрешённых номеров <br><SELECT id="Доступ_СМС_с_неразрешённых_номеров_по_паролю" SIZE="1" onchange="UpdateIButtonUI();"><OPTION VALUE="1">Разрешён только по паролю</OPTION><OPTION VALUE="0">Запрещён</OPTION></SELECT><br><br>
+									<br><br><br>
+									<b>SMS команды управления выходами:</b><br>
+									<TABLE border=1 borderColor=#BBBBBB cellspacing=0 cellpadding=5 style="border-collapse:collapse">
+										<TR bgcolor=gainsboro><TD align=center width=100>Выход</TD><TD>Команда включения</TD><TD>Команда выключения</TD></TR>
+										<TR><TD align=center>Лампа</TD><TD><INPUT id="Команда_включения_лампы" type="text" size="30" maxlength="40" ></TD><TD><INPUT id="Команда_выключения_лампы" type="text" size="30" maxlength="40" ></TD></TR>
+										<TR><TD align=center>Режим охраны</TD><TD><INPUT id="Команда_постановки_на_охрану" type="text" size="30" maxlength="40" ></TD><TD><INPUT id="Команда_снятия_с_охраны" type="text" size="30" maxlength="40" ></TD></TR>
+									</TABLE>
+									<br>
+									<b>Предопределённые команды</b><br>
+									<TABLE border=1 borderColor=#BBBBBB cellspacing=0 cellpadding=5 style="border-collapse:collapse">
+										<TR bgcolor=gainsboro><TD align=center width=100>Команда</TD><TD>Описание</TD></TR>
+										<TR><TD>OFF1 ... OFF6</TD><TD>Выключение соответствующего входа 1...6. Отменяется при выключении режима охраны.</TD></TR>
+										<TR><TD>TMCLR</TD><TD>Очистка памяти электронных ключей.</TD></TR>
+										<TR><TD>TMDIS</TD><TD>Запрет настройки электронных ключей.</TD></TR>
+										<TR><TD>TMEN</TD><TD>Разрешение настройки электронных ключей.</TD></TR>
+										<TR><TD>REPORT</TD><TD>Запрос СМС отчёта.</TD></TR>
+										<TR><TD>Дозв=</TD><TD>Установка номеров для дозвона.</TD></TR>
+										<TR><TD>Смс=</TD><TD>Установка номеров для отправки СМС.</TD></TR>
+										<TR><TD>Доступ=</TD><TD>Установка номеров с разрешённым доступом.</TD></TR>
+									</TABLE>
+									После команд установки номеров следует список телефонных номеров через запятую, оканчивающийся пробелом.
+									<br><br><br><br>
+									<b>Смс управление внешними устройствами</b><br>
+									<TABLE border=1 borderColor=#BBBBBB cellspacing=0 cellpadding=5 style="border-collapse:collapse">
+										<TR bgcolor=gainsboro><TD align=center width=100>СМС команда</TD><TD>Сообщение отправляемое в RS-485</TD></TR>
+										<TR><TD><INPUT id="СМС_команда_1" type="text" size="30" maxlength="40" ></TD><TD><INPUT id="СМС_команда_1_RS" type="text" size="60" maxlength="70" ></TD></TR>
+										<TR><TD><INPUT id="СМС_команда_2" type="text" size="30" maxlength="40" ></TD><TD><INPUT id="СМС_команда_2_RS" type="text" size="60" maxlength="70" ></TD></TR>
+										<TR><TD><INPUT id="СМС_команда_3" type="text" size="30" maxlength="40" ></TD><TD><INPUT id="СМС_команда_3_RS" type="text" size="60" maxlength="70" ></TD></TR>
+										<TR><TD><INPUT id="СМС_команда_4" type="text" size="30" maxlength="40" ></TD><TD><INPUT id="СМС_команда_4_RS" type="text" size="60" maxlength="70" ></TD></TR>
+										<TR><TD><INPUT id="СМС_команда_5" type="text" size="30" maxlength="40" ></TD><TD><INPUT id="СМС_команда_5_RS" type="text" size="60" maxlength="70" ></TD></TR>
+									</TABLE>
+								</TD>
+							</TR>
+						</TR>
+					</TABLE>
+					<TABLE id="table_inputs" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Настройка входов</b></font></TD>
+						</TR>
+						<TR valign=top height=100%>
+							<TD class="page_body_style">
+								<BLOCKQUOTE dir=ltr style="PADDING: 5px; MARGIN: 0px; BORDER: #A4B97F 1px solid;">
+								<b>Вход 1</b><br>
+								<label style="width:100">Тип датчика</label><SELECT id="Настройка_датчика1" SIZE="1" onchange="UpdateInputsUI()"><OPTION VALUE="Настройки_выключенного_входа">-</OPTION><OPTION VALUE="Настройки_датчика_движения">Датчик движения</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери">Датчик открывания двери</OPTION><OPTION VALUE="Настройки_датчика_движения_без_задержки">Датчик движения без задержки</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери_без_задержки">Датчик открывания двери без задержки</OPTION><OPTION VALUE="Настройки_датчика_протекания_воды">Датчик протекания воды</OPTION><OPTION VALUE="Настройки_пожарного_датчика">Датчик пожара</OPTION><OPTION VALUE="Настройки_датчика_разбития_стекла">Датчик разбития окна</OPTION><OPTION VALUE="Настройки_датчика_утечки_газа">Датчик утечки газа</OPTION><OPTION VALUE="Настройки_датчика_тревожная_кнопка">Тревожная кнопка</OPTION><OPTION VALUE="Настройки_датчика_появление12В">Появление +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_пропадание12В">Пропадание +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_замыкание">Замыкание шлейфа</OPTION><OPTION VALUE="Настройки_датчика_нр">Замыкание шлейфа (постоянный контроль)</OPTION><OPTION VALUE="Настройки_датчика_размыкание">Размыкание шлейфа</OPTION></SELECT><br>
+								<table id="table_input_1" border=0>
+									<tr>
+										<td width=160>
+											<INPUT id="Дозвон_при_срабатывании_входа1" type=checkbox onclick="UpdateInputsUI()"><LABEL for="Дозвон_при_срабатывании_входа1"> Дозвон </LABEL><br>
+											<INPUT id="СМС_при_срабатывании_входа1" type=checkbox onclick="UpdateInputsUI()"><LABEL for="СМС_при_срабатывании_входа1"> SMS </LABEL><br>
+											<INPUT id="Включение_сирены_по_входу1" type=checkbox><LABEL for="Включение_сирены_по_входу1"> Включать сирену </LABEL><br>
+											<INPUT id="Включение_лампы_по_входу1" type=checkbox><LABEL for="Включение_лампы_по_входу1"> Включать лампу </LABEL><br>
+											<INPUT id="Cообщение_при_восстановлении_входа1" type=checkbox><LABEL for="Cообщение_при_восстановлении_входа1">Сообщать при восстановлении</LABEL>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Звук_для_дозвона_по_входу1">Голосовое сообщение</label>
+										</td>
+										<td>
+										<SELECT id="Звук_для_дозвона_по_входу1" SIZE="1" style="width:300px"><OPTION VALUE="Звук_Нет_звука">-</OPTION><OPTION VALUE="Звук_Тревога_обнаружено_движение">Тревога обнаружено движение</OPTION><OPTION VALUE="Звук_Внимание_протекание_воды">Внимание протекание воды</OPTION><OPTION VALUE="Звук_Тревога_пожар">Тревога пожар</OPTION><OPTION VALUE="Звук_Тревога_разбито_стекло">Тревога разбито стекло</OPTION><OPTION VALUE="Звук_Тревога_нажата_тревожная_кнопка">Тревога нажата тревожная кнопка</OPTION><OPTION VALUE="Звук_Тревога_прихожая">Тревога прихожая</OPTION><OPTION VALUE="Звук_Тревога_зал">Тревога зал</OPTION><OPTION VALUE="Звук_Тревога_кухня">Тревога кухня</OPTION><OPTION VALUE="Звук_Тревога_детская">Тревога детская</OPTION><OPTION VALUE="Звук_Тревога_комната1">Тревога комната 1</OPTION><OPTION VALUE="Звук_Тревога_комната2">Тревога комната 2</OPTION><OPTION VALUE="Звук_Тревога_комната3">Тревога комната 3</OPTION><OPTION VALUE="Звук_Завышенная_температура">Внимание завышенная температура</OPTION><OPTION VALUE="Звук_Заниженная_температура">Внимание заниженная температура</OPTION></SELECT>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Текст_СМС_для_входа1">Текст SMS сообщения</label>
+										</td>
+										<td>
+											<INPUT id="Текст_СМС_для_входа1" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВТекст_СМС_для_входа1" type=text maxlength="60" style="width:300px"><br>
+										</td>
+									</tr>
+
+									<tr>
+										<td>
+										<INPUT id="КУВУ_Вход1_исп" type=checkbox onclick="UpdateInputsUI()"> <label id="метка_КУВУ_Вход1">Сообщение в RS интерфейс</label> <br>
+										</td>
+										<td>
+											<INPUT id="КУВУ_Вход1" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВКУВУ_Вход1" type=text maxlength="60" style="width:300px"><br>
+										</td>
+									</tr>
+								</table>
+								</BLOCKQUOTE>
+								<br>
+								<BLOCKQUOTE dir=ltr style="PADDING: 5px; MARGIN: 0px; BORDER: #A4B97F 1px solid;">
+								<b>Вход 2</b><br>
+								<label style="width:100">Тип датчика</label><SELECT id="Настройка_датчика2" SIZE="1" onchange="UpdateInputsUI()"><OPTION VALUE="Настройки_выключенного_входа">-</OPTION><OPTION VALUE="Настройки_датчика_движения">Датчик движения</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери">Датчик открывания двери</OPTION><OPTION VALUE="Настройки_датчика_движения_без_задержки">Датчик движения без задержки</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери_без_задержки">Датчик открывания двери без задержки</OPTION><OPTION VALUE="Настройки_датчика_протекания_воды">Датчик протекания воды</OPTION><OPTION VALUE="Настройки_пожарного_датчика">Датчик пожара</OPTION><OPTION VALUE="Настройки_датчика_разбития_стекла">Датчик разбития окна</OPTION><OPTION VALUE="Настройки_датчика_утечки_газа">Датчик утечки газа</OPTION><OPTION VALUE="Настройки_датчика_тревожная_кнопка">Тревожная кнопка</OPTION><OPTION VALUE="Настройки_датчика_появление12В">Появление +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_пропадание12В">Пропадание +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_замыкание">Замыкание шлейфа</OPTION><OPTION VALUE="Настройки_датчика_нр">Замыкание шлейфа (постоянный контроль)</OPTION><OPTION VALUE="Настройки_датчика_размыкание">Размыкание шлейфа</OPTION></SELECT><br>
+								<table id="table_input_2" border=0>
+									<tr>
+										<td width=160>
+											<INPUT id="Дозвон_при_срабатывании_входа2" type=checkbox onclick="UpdateInputsUI()"><LABEL for="Дозвон_при_срабатывании_входа2"> Дозвон </LABEL><br>
+											<INPUT id="СМС_при_срабатывании_входа2" type=checkbox onclick="UpdateInputsUI()"><LABEL for="СМС_при_срабатывании_входа2"> SMS </LABEL><br>
+											<INPUT id="Включение_сирены_по_входу2" type=checkbox><LABEL for="Включение_сирены_по_входу2"> Включать сирену </LABEL><br>
+											<INPUT id="Включение_лампы_по_входу2" type=checkbox><LABEL for="Включение_лампы_по_входу2"> Включать лампу </LABEL><br>
+											<INPUT id="Cообщение_при_восстановлении_входа2" type=checkbox><LABEL for="Cообщение_при_восстановлении_входа2"> Сообщать при восстановлении </LABEL>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Звук_для_дозвона_по_входу2">Голосовое сообщение</label>
+										</td>
+										<td>
+											<SELECT id="Звук_для_дозвона_по_входу2" SIZE="1" style="width:300px"><OPTION VALUE="Звук_Нет_звука">-</OPTION><OPTION VALUE="Звук_Тревога_обнаружено_движение">Тревога обнаружено движение</OPTION><OPTION VALUE="Звук_Внимание_протекание_воды">Внимание протекание воды</OPTION><OPTION VALUE="Звук_Тревога_пожар">Тревога пожар</OPTION><OPTION VALUE="Звук_Тревога_разбито_стекло">Тревога разбито стекло</OPTION><OPTION VALUE="Звук_Тревога_нажата_тревожная_кнопка">Тревога нажата тревожная кнопка</OPTION><OPTION VALUE="Звук_Тревога_прихожая">Тревога прихожая</OPTION><OPTION VALUE="Звук_Тревога_зал">Тревога зал</OPTION><OPTION VALUE="Звук_Тревога_кухня">Тревога кухня</OPTION><OPTION VALUE="Звук_Тревога_детская">Тревога детская</OPTION><OPTION VALUE="Звук_Тревога_комната1">Тревога комната 1</OPTION><OPTION VALUE="Звук_Тревога_комната2">Тревога комната 2</OPTION><OPTION VALUE="Звук_Тревога_комната3">Тревога комната 3</OPTION><OPTION VALUE="Звук_Завышенная_температура">Внимание завышенная температура</OPTION><OPTION VALUE="Звук_Заниженная_температура">Внимание заниженная температура</OPTION></SELECT>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Текст_СМС_для_входа2">Текст SMS сообщения</label>
+										</td>
+										<td>
+											<INPUT id="Текст_СМС_для_входа2" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВТекст_СМС_для_входа2" type=text maxlength="60" style="width:300px"><br>
+										</td>
+									</tr>
+									<tr>
+										<td>
+										<INPUT id="КУВУ_Вход2_исп" type=checkbox onclick="UpdateInputsUI()"> <label id="метка_КУВУ_Вход2">Сообщение в RS интерфейс</label> <br>
+										</td>
+										<td>
+											<INPUT id="КУВУ_Вход2" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВКУВУ_Вход2" type=text maxlength="60" style="width:300px"><br>
+										</td>
+
+									</tr>
+
+								</table>
+								</BLOCKQUOTE>
+								<br>
+								<BLOCKQUOTE dir=ltr style="PADDING: 5px; MARGIN: 0px; BORDER: #A4B97F 1px solid;">
+								<b>Вход 3</b><br>
+								<label style="width:100">Тип датчика</label><SELECT id="Настройка_датчика3" SIZE="1" onchange="UpdateInputsUI()"><OPTION VALUE="Настройки_выключенного_входа">-</OPTION><OPTION VALUE="Настройки_датчика_движения">Датчик движения</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери">Датчик открывания двери</OPTION><OPTION VALUE="Настройки_датчика_движения_без_задержки">Датчик движения без задержки</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери_без_задержки">Датчик открывания двери без задержки</OPTION><OPTION VALUE="Настройки_датчика_протекания_воды">Датчик протекания воды</OPTION><OPTION VALUE="Настройки_пожарного_датчика">Датчик пожара</OPTION><OPTION VALUE="Настройки_датчика_разбития_стекла">Датчик разбития окна</OPTION><OPTION VALUE="Настройки_датчика_утечки_газа">Датчик утечки газа</OPTION><OPTION VALUE="Настройки_датчика_тревожная_кнопка">Тревожная кнопка</OPTION><OPTION VALUE="Настройки_датчика_появление12В">Появление +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_пропадание12В">Пропадание +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_замыкание">Замыкание шлейфа</OPTION><OPTION VALUE="Настройки_датчика_нр">Замыкание шлейфа (постоянный контроль)</OPTION><OPTION VALUE="Настройки_датчика_размыкание">Размыкание шлейфа</OPTION></SELECT><br>
+								<table id="table_input_3" border=0>
+									<tr>
+										<td width=160>
+											<INPUT id="Дозвон_при_срабатывании_входа3" type=checkbox onclick="UpdateInputsUI()"><LABEL for="Дозвон_при_срабатывании_входа3"> Дозвон </LABEL><br>
+											<INPUT id="СМС_при_срабатывании_входа3" type=checkbox onclick="UpdateInputsUI()"><LABEL for="СМС_при_срабатывании_входа3"> SMS </LABEL><br>
+											<INPUT id="Включение_сирены_по_входу3" type=checkbox><LABEL for="Включение_сирены_по_входу3"> Включать сирену </LABEL><br>
+											<INPUT id="Включение_лампы_по_входу3" type=checkbox><LABEL for="Включение_лампы_по_входу3"> Включать лампу </LABEL><br>
+											<INPUT id="Cообщение_при_восстановлении_входа3" type=checkbox><LABEL for="Cообщение_при_восстановлении_входа3"> Сообщать при восстановлении </LABEL>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Звук_для_дозвона_по_входу3">Голосовое сообщение</label>
+										</td>
+										<td>
+											<SELECT id="Звук_для_дозвона_по_входу3" SIZE="1" style="width:300px"><OPTION VALUE="Звук_Нет_звука">-</OPTION><OPTION VALUE="Звук_Тревога_обнаружено_движение">Тревога обнаружено движение</OPTION><OPTION VALUE="Звук_Внимание_протекание_воды">Внимание протекание воды</OPTION><OPTION VALUE="Звук_Тревога_пожар">Тревога пожар</OPTION><OPTION VALUE="Звук_Тревога_разбито_стекло">Тревога разбито стекло</OPTION><OPTION VALUE="Звук_Тревога_нажата_тревожная_кнопка">Тревога нажата тревожная кнопка</OPTION><OPTION VALUE="Звук_Тревога_прихожая">Тревога прихожая</OPTION><OPTION VALUE="Звук_Тревога_зал">Тревога зал</OPTION><OPTION VALUE="Звук_Тревога_кухня">Тревога кухня</OPTION><OPTION VALUE="Звук_Тревога_детская">Тревога детская</OPTION><OPTION VALUE="Звук_Тревога_комната1">Тревога комната 1</OPTION><OPTION VALUE="Звук_Тревога_комната2">Тревога комната 2</OPTION><OPTION VALUE="Звук_Тревога_комната3">Тревога комната 3</OPTION><OPTION VALUE="Звук_Завышенная_температура">Внимание завышенная температура</OPTION><OPTION VALUE="Звук_Заниженная_температура">Внимание заниженная температура</OPTION></SELECT>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Текст_СМС_для_входа3">Текст SMS сообщения</label>
+										</td>
+										<td>
+											<INPUT id="Текст_СМС_для_входа3" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВТекст_СМС_для_входа3" type=text maxlength="60" style="width:300px"><br>
+										</td>
+									</tr>
+									<tr>
+										<td>
+										<INPUT id="КУВУ_Вход3_исп" type=checkbox onclick="UpdateInputsUI()"> <label id="метка_КУВУ_Вход3">Сообщение в RS интерфейс</label> <br>
+										</td>
+										<td>
+											<INPUT id="КУВУ_Вход3" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВКУВУ_Вход3" type=text maxlength="60" style="width:300px"><br>
+										</td>
+									</tr>
+
+
+								</table>
+								</BLOCKQUOTE>
+								<br>
+								<BLOCKQUOTE dir=ltr style="PADDING: 5px; MARGIN: 0px; BORDER: #A4B97F 1px solid;">
+								<b>Вход 4</b><br>
+								<label style="width:100">Тип датчика</label><SELECT id="Настройка_датчика4" SIZE="1" onchange="UpdateInputsUI()"><OPTION VALUE="Настройки_выключенного_входа">-</OPTION><OPTION VALUE="Настройки_датчика_движения">Датчик движения</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери">Датчик открывания двери</OPTION><OPTION VALUE="Настройки_датчика_движения_без_задержки">Датчик движения без задержки</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери_без_задержки">Датчик открывания двери без задержки</OPTION><OPTION VALUE="Настройки_датчика_протекания_воды">Датчик протекания воды</OPTION><OPTION VALUE="Настройки_пожарного_датчика">Датчик пожара</OPTION><OPTION VALUE="Настройки_датчика_разбития_стекла">Датчик разбития окна</OPTION><OPTION VALUE="Настройки_датчика_утечки_газа">Датчик утечки газа</OPTION><OPTION VALUE="Настройки_датчика_тревожная_кнопка">Тревожная кнопка</OPTION><OPTION VALUE="Настройки_датчика_появление12В">Появление +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_пропадание12В">Пропадание +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_замыкание">Замыкание шлейфа</OPTION><OPTION VALUE="Настройки_датчика_нр">Замыкание шлейфа (постоянный контроль)</OPTION><OPTION VALUE="Настройки_датчика_размыкание">Размыкание шлейфа</OPTION></SELECT><br>
+								<table id="table_input_4" border=0>
+									<tr>
+										<td width=160>
+											<INPUT id="Дозвон_при_срабатывании_входа4" type=checkbox onclick="UpdateInputsUI()"><LABEL for="Дозвон_при_срабатывании_входа4"> Дозвон </LABEL><br>
+											<INPUT id="СМС_при_срабатывании_входа4" type=checkbox onclick="UpdateInputsUI()"><LABEL for="СМС_при_срабатывании_входа4"> SMS </LABEL><br>
+											<INPUT id="Включение_сирены_по_входу4" type=checkbox><LABEL for="Включение_сирены_по_входу4"> Включать сирену </LABEL><br>
+											<INPUT id="Включение_лампы_по_входу4" type=checkbox><LABEL for="Включение_лампы_по_входу4"> Включать лампу </LABEL><br>
+											<INPUT id="Cообщение_при_восстановлении_входа4" type=checkbox><LABEL for="Cообщение_при_восстановлении_входа4"> Сообщать при восстановлении </LABEL>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Звук_для_дозвона_по_входу4">Голосовое сообщение</label>
+										</td>
+										<td>
+											<SELECT id="Звук_для_дозвона_по_входу4" SIZE="1" style="width:300px"><OPTION VALUE="Звук_Нет_звука">-</OPTION><OPTION VALUE="Звук_Тревога_обнаружено_движение">Тревога обнаружено движение</OPTION><OPTION VALUE="Звук_Внимание_протекание_воды">Внимание протекание воды</OPTION><OPTION VALUE="Звук_Тревога_пожар">Тревога пожар</OPTION><OPTION VALUE="Звук_Тревога_разбито_стекло">Тревога разбито стекло</OPTION><OPTION VALUE="Звук_Тревога_нажата_тревожная_кнопка">Тревога нажата тревожная кнопка</OPTION><OPTION VALUE="Звук_Тревога_прихожая">Тревога прихожая</OPTION><OPTION VALUE="Звук_Тревога_зал">Тревога зал</OPTION><OPTION VALUE="Звук_Тревога_кухня">Тревога кухня</OPTION><OPTION VALUE="Звук_Тревога_детская">Тревога детская</OPTION><OPTION VALUE="Звук_Тревога_комната1">Тревога комната 1</OPTION><OPTION VALUE="Звук_Тревога_комната2">Тревога комната 2</OPTION><OPTION VALUE="Звук_Тревога_комната3">Тревога комната 3</OPTION><OPTION VALUE="Звук_Завышенная_температура">Внимание завышенная температура</OPTION><OPTION VALUE="Звук_Заниженная_температура">Внимание заниженная температура</OPTION></SELECT>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Текст_СМС_для_входа4">Текст SMS сообщения</label>
+										</td>
+										<td>
+											<INPUT id="Текст_СМС_для_входа4" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВТекст_СМС_для_входа4" type=text maxlength="60" style="width:300px"><br>
+										</td>
+									</tr>
+									<tr>
+										<td>
+										<INPUT id="КУВУ_Вход4_исп" type=checkbox onclick="UpdateInputsUI()"> <label id="метка_КУВУ_Вход4">Сообщение в RS интерфейс</label> <br>
+										</td>
+										<td>
+											<INPUT id="КУВУ_Вход4" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВКУВУ_Вход4" type=text maxlength="60" style="width:300px"><br>
+										</td>
+									</tr>
+
+								</table>
+								</BLOCKQUOTE>
+								<br>
+								<BLOCKQUOTE dir=ltr style="PADDING: 5px; MARGIN: 0px; BORDER: #A4B97F 1px solid;">
+								<b>Вход 5</b><br>
+								<label style="width:100">Тип датчика</label><SELECT id="Настройка_датчика5" SIZE="1" onchange="UpdateInputsUI()"><OPTION VALUE="Настройки_выключенного_входа">-</OPTION><OPTION VALUE="Настройки_датчика_движения">Датчик движения</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери">Датчик открывания двери</OPTION><OPTION VALUE="Настройки_датчика_движения_без_задержки">Датчик движения без задержки</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери_без_задержки">Датчик открывания двери без задержки</OPTION><OPTION VALUE="Настройки_датчика_протекания_воды">Датчик протекания воды</OPTION><OPTION VALUE="Настройки_пожарного_датчика">Датчик пожара</OPTION><OPTION VALUE="Настройки_датчика_разбития_стекла">Датчик разбития окна</OPTION><OPTION VALUE="Настройки_датчика_утечки_газа">Датчик утечки газа</OPTION><OPTION VALUE="Настройки_датчика_тревожная_кнопка">Тревожная кнопка</OPTION><OPTION VALUE="Настройки_датчика_появление12В">Появление +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_пропадание12В">Пропадание +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_замыкание">Замыкание шлейфа</OPTION><OPTION VALUE="Настройки_датчика_нр">Замыкание шлейфа (постоянный контроль)</OPTION><OPTION VALUE="Настройки_датчика_размыкание">Размыкание шлейфа</OPTION></SELECT><br>
+								<table id="table_input_5" border=0>
+									<tr>
+										<td width=160>
+											<INPUT id="Дозвон_при_срабатывании_входа5" type=checkbox onclick="UpdateInputsUI()"><LABEL for="Дозвон_при_срабатывании_входа5"> Дозвон </LABEL><br>
+											<INPUT id="СМС_при_срабатывании_входа5" type=checkbox onclick="UpdateInputsUI()"><LABEL for="СМС_при_срабатывании_входа5"> SMS </LABEL><br>
+											<INPUT id="Включение_сирены_по_входу5" type=checkbox><LABEL for="Включение_сирены_по_входу5"> Включать сирену </LABEL><br>
+											<INPUT id="Включение_лампы_по_входу5" type=checkbox><LABEL for="Включение_лампы_по_входу5"> Включать лампу </LABEL><br>
+											<INPUT id="Cообщение_при_восстановлении_входа5" type=checkbox><LABEL for="Cообщение_при_восстановлении_входа5"> Сообщать при восстановлении </LABEL>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Звук_для_дозвона_по_входу5">Голосовое сообщение</label>
+										</td>
+										<td>
+											<SELECT id="Звук_для_дозвона_по_входу5" SIZE="1" style="width:300px"><OPTION VALUE="Звук_Нет_звука">-</OPTION><OPTION VALUE="Звук_Тревога_обнаружено_движение">Тревога обнаружено движение</OPTION><OPTION VALUE="Звук_Внимание_протекание_воды">Внимание протекание воды</OPTION><OPTION VALUE="Звук_Тревога_пожар">Тревога пожар</OPTION><OPTION VALUE="Звук_Тревога_разбито_стекло">Тревога разбито стекло</OPTION><OPTION VALUE="Звук_Тревога_нажата_тревожная_кнопка">Тревога нажата тревожная кнопка</OPTION><OPTION VALUE="Звук_Тревога_прихожая">Тревога прихожая</OPTION><OPTION VALUE="Звук_Тревога_зал">Тревога зал</OPTION><OPTION VALUE="Звук_Тревога_кухня">Тревога кухня</OPTION><OPTION VALUE="Звук_Тревога_детская">Тревога детская</OPTION><OPTION VALUE="Звук_Тревога_комната1">Тревога комната 1</OPTION><OPTION VALUE="Звук_Тревога_комната2">Тревога комната 2</OPTION><OPTION VALUE="Звук_Тревога_комната3">Тревога комната 3</OPTION><OPTION VALUE="Звук_Завышенная_температура">Внимание завышенная температура</OPTION><OPTION VALUE="Звук_Заниженная_температура">Внимание заниженная температура</OPTION></SELECT>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label id="метка_Текст_СМС_для_входа5">Текст SMS сообщения</label>
+										</td>
+										<td>
+											<INPUT id="Текст_СМС_для_входа5" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВТекст_СМС_для_входа5" type=text maxlength="60" style="width:300px"><br>
+										</td>
+									</tr>
+									<tr>
+										<td>
+										<INPUT id="КУВУ_Вход5_исп" type=checkbox onclick="UpdateInputsUI()"> <label id="метка_КУВУ_Вход5">Сообщение в RS интерфейс</label> <br>
+										</td>
+										<td>
+											<INPUT id="КУВУ_Вход5" type=text maxlength="60" style="width:300px"><br>
+										</td>
+										<td>
+											<INPUT id="ВКУВУ_Вход5" type=text maxlength="60" style="width:300px"><br>
+										</td>
+									</tr>
+
+								</table>
+								</BLOCKQUOTE>
+								<br>
+								<BLOCKQUOTE dir=ltr style="PADDING: 5px; MARGIN: 0px; BORDER: #A4B97F 1px solid;">
+								<b>Вход 6</b><br>
+								<FIELDSET style="width:300;">
+								    <LEGEND>Назначение</LEGEND>
+								    <INPUT type="radio" name="in6_purpose" id="вход6_назначение_обычный_вход" onclick="UpdateInput6UI();" /><LABEL for="вход6_назначение_обычный_вход">Обычный вход</LABEL><br>
+								    <INPUT type="radio" name="in6_purpose" id="Использование_6го_входа_для_постановки_снятия" onclick="UpdateInput6UI();" /><LABEL for="Использование_6го_входа_для_постановки_снятия">Постановка/снятие с охраны</LABEL><br>
+								</FIELDSET>
+								<br><br>
+								<div id="in6_typical_settings">
+								    <label style="width:100">Тип датчика</label><SELECT id="Настройка_датчика6" SIZE="1" onchange="UpdateInputsUI()"><OPTION VALUE="Настройки_выключенного_входа">-</OPTION><OPTION VALUE="Настройки_датчика_движения">Датчик движения</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери">Датчик открывания двери</OPTION><OPTION VALUE="Настройки_датчика_движения_без_задержки">Датчик движения без задержки</OPTION><OPTION VALUE="Настройки_датчика_открывания_двери_без_задержки">Датчик открывания двери без задержки</OPTION><OPTION VALUE="Настройки_датчика_протекания_воды">Датчик протекания воды</OPTION><OPTION VALUE="Настройки_пожарного_датчика">Датчик пожара</OPTION><OPTION VALUE="Настройки_датчика_разбития_стекла">Датчик разбития окна</OPTION><OPTION VALUE="Настройки_датчика_утечки_газа">Датчик утечки газа</OPTION><OPTION VALUE="Настройки_датчика_тревожная_кнопка">Тревожная кнопка</OPTION><OPTION VALUE="Настройки_датчика_появление12В">Появление +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_пропадание12В">Пропадание +12 вольт</OPTION><OPTION VALUE="Настройки_датчика_замыкание">Замыкание шлейфа</OPTION><OPTION VALUE="Настройки_датчика_размыкание">Размыкание шлейфа</OPTION></SELECT><br>
+								    <table id="table_input_6" border=0>
+									    <tr>
+										    <td width=160>
+											    <INPUT id="Дозвон_при_срабатывании_входа6" type=checkbox onclick="UpdateInputsUI()"><LABEL for="Дозвон_при_срабатывании_входа6"> Дозвон </LABEL><br>
+											    <INPUT id="СМС_при_срабатывании_входа6" type=checkbox onclick="UpdateInputsUI()"><LABEL for="СМС_при_срабатывании_входа6"> SMS </LABEL><br>
+											    <INPUT id="Включение_сирены_по_входу6" type=checkbox><LABEL for="Включение_сирены_по_входу6"> Включать сирену </LABEL><br>
+											    <INPUT id="Включение_лампы_по_входу6" type=checkbox><LABEL for="Включение_лампы_по_входу6"> Включать лампу </LABEL><br>
+												<INPUT id="Cообщение_при_восстановлении_входа6" type=checkbox><LABEL for="Cообщение_при_восстановлении_входа6"> Сообщать при восстановлении </LABEL>
+										    </td>
+									    </tr>
+									    <tr>
+										    <td>
+											    <label id="метка_Звук_для_дозвона_по_входу6">Голосовое сообщение</label>
+										    </td>
+										    <td>
+											    <SELECT id="Звук_для_дозвона_по_входу6" SIZE="1" style="width:300px"><OPTION VALUE="Звук_Нет_звука">-</OPTION><OPTION VALUE="Звук_Тревога_обнаружено_движение">Тревога обнаружено движение</OPTION><OPTION VALUE="Звук_Внимание_протекание_воды">Внимание протекание воды</OPTION><OPTION VALUE="Звук_Тревога_пожар">Тревога пожар</OPTION><OPTION VALUE="Звук_Тревога_разбито_стекло">Тревога разбито стекло</OPTION><OPTION VALUE="Звук_Тревога_нажата_тревожная_кнопка">Тревога нажата тревожная кнопка</OPTION><OPTION VALUE="Звук_Тревога_прихожая">Тревога прихожая</OPTION><OPTION VALUE="Звук_Тревога_зал">Тревога зал</OPTION><OPTION VALUE="Звук_Тревога_кухня">Тревога кухня</OPTION><OPTION VALUE="Звук_Тревога_детская">Тревога детская</OPTION><OPTION VALUE="Звук_Тревога_комната1">Тревога комната 1</OPTION><OPTION VALUE="Звук_Тревога_комната2">Тревога комната 2</OPTION><OPTION VALUE="Звук_Тревога_комната3">Тревога комната 3</OPTION><OPTION VALUE="Звук_Завышенная_температура">Внимание завышенная температура</OPTION><OPTION VALUE="Звук_Заниженная_температура">Внимание заниженная температура</OPTION></SELECT>
+										    </td>
+									    </tr>
+									    <tr>
+										    <td>
+											    <label id="метка_Текст_СМС_для_входа6">Текст SMS сообщения</label>
+										    </td>
+										    <td>
+											    <INPUT id="Текст_СМС_для_входа6" type=text maxlength="60" style="width:300px"><br>
+										    </td>
+											<td>
+											    <INPUT id="ВТекст_СМС_для_входа6" type=text maxlength="60" style="width:300px"><br>
+										    </td>
+									    </tr>
+									    <tr>
+										    <td>
+										    <INPUT id="КУВУ_Вход6_исп" type=checkbox onclick="UpdateInputsUI()"> <label id="метка_КУВУ_Вход6">Сообщение в RS интерфейс</label> <br>
+										    </td>
+										    <td>
+											    <INPUT id="КУВУ_Вход6" type=text maxlength="60" style="width:300px"><br>
+										    </td>
+											<td>
+											    <INPUT id="ВКУВУ_Вход6" type=text maxlength="60" style="width:300px"><br>
+										    </td>
+									    </tr>
+								    </table>
+								</div>
+								<div id="in6_guard_settings">
+								    Для постановки/снятия используется <SELECT id="Режим_постановки_снятия_по_6му_входу" SIZE="1"><OPTION VALUE="0">кнопка</OPTION><OPTION VALUE="1">переключатель</OPTION></SELECT><br>
+								</div>
+								</BLOCKQUOTE>
+								<br>
+
+								<TABLE border=0 cellspacing=0 cellpadding=5>
+									<TBODY align=left>
+										<TR><TD><div noWrap>Номера для дозвона<br><span class="descr">один или несколько через запятую</span></div></TD><TD><INPUT id="Ф_Номера_для_дозвона_при_срабатывании_входов" type="text" size="60" maxlength="200"></TD></TR>
+										<TR><TD><div noWrap>Номера для отправки SMS<br><span class="descr">один или несколько через запятую</span></div></TD><TD><INPUT id="Ф_Номера_для_отправки_СМС_при_срабатывании_входов" type="text" size="60" maxlength="200"></TD></TR>
+									</TBODY>
+								</TABLE>
+							</TD>
+						</TR>
+					</TABLE>
+					<TABLE id="table_guard_mode" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Настройка режима охраны</b></font></TD>
+						</TR>
+						<TR valign=top>
+							<TD class="page_body_style">
+								Задержка постановки на охрану ключём Touch Memory <INPUT id="Время_постановки_на_охрану" type=text size=4 maxlength=4> * 0.1 сек.<br>
+								Время на снятие с охраны <INPUT id="Время_на_снятие_с_охраны" type=text size=4 maxlength=4> * 0.1 сек.<br>
+								<br>
+								<FIELDSET style="width: 200; height: 110" align=top>
+									<LEGEND>При постановке на охрану</LEGEND>
+									<INPUT id="Дозвон_при_постановке_на_охрану" type=checkbox><LABEL for="Дозвон_при_постановке_на_охрану"> Дозвон </LABEL><br>
+									<INPUT id="СМС_при_постановке_на_охрану" type=checkbox><LABEL for="СМС_при_постановке_на_охрану"> SMS </LABEL><br>
+									<INPUT id="Включение_лампы_при_постановке_на_охрану" type=checkbox><LABEL for="Включение_лампы_при_постановке_на_охрану"> Включать лампу </LABEL><br>
+								</FIELDSET>&nbsp&nbsp&nbsp
+								<FIELDSET style="width: 200; height: 110" align=top>
+									<LEGEND>При снятии с охраны</LEGEND>
+									<INPUT id="Дозвон_при_снятии_с_охраны" type=checkbox><LABEL for="Дозвон_при_снятии_с_охраны"> Дозвон </LABEL><br>
+									<INPUT id="СМС_при_снятии_с_охраны" type=checkbox><LABEL for="СМС_при_снятии_с_охраны"> SMS </LABEL><br>
+									<INPUT id="Выключение_сирены_при_снятии_с_охраны" type=checkbox><LABEL for="Выключение_сирены_при_снятии_с_охраны"> Выключать сирену </LABEL><br>
+									<INPUT id="Выключение_лампы_при_снятии_с_охраны" type=checkbox><LABEL for="Выключение_лампы_при_снятии_с_охраны"> Выключать лампу </LABEL><br>
+								</FIELDSET>
+								<br><br>
+								<TABLE border=0>
+									<TBODY>
+										<TR><TD><div noWrap>Номера для дозвона<br><span class="descr">один или несколько через запятую</span></div></TD><TD><INPUT id="Ф_Номера_для_дозвона_при_смене_режима_охраны" type="text" size="60" maxlength="200"></TD></TR>
+										<TR><TD><div noWrap>Номера для отправки SMS<br><span class="descr">один или несколько через запятую</span></div></TD><TD><INPUT id="Ф_Номера_для_отправки_СМС_при_смене_режима_охраны" type="text" size="60" maxlength="200"></TD></TR>
+									</TBODY>
+								</TABLE>
+								<BR><BR>
+								<TABLE border=0>
+									<TBODY>
+										<td>
+										<INPUT id="Озвучивание_постановки_снятия" type=checkbox onclick="UpdateInputsUI()"> <label>Озвучивание сиреной постановки снятия с охраны</label> <br><br><br><br>
+										При включении Информатора режим охраны <SELECT id="Режим_охраны_при_включении_питания" SIZE="1" onchange="UpdateIButtonUI();"><OPTION VALUE="3">Включен без информирования</OPTION><OPTION VALUE="1">Включен</OPTION><OPTION VALUE="2">Включен с задержкой</OPTION><OPTION VALUE="0">Выключен</OPTION></SELECT><br>
+										</td>
+
+									</TBODY>
+								</TABLE>
+								<BR><BR>
+								<TABLE border=0>
+									<TBODY>
+										<td>
+										<INPUT id="КУВУ_Постановка_на_охрану_исп" type=checkbox onclick="UpdateInputsUI()"> <label>Сообщение в RS интерфейс при постановке на охрану</label> <br>
+										<INPUT id="КУВУ_Постановка_на_охрану" type=text maxlength="60" style="width:300px">
+										</td>
+
+									</TBODY>
+								</TABLE>
+								<BR>
+								<TABLE border=0>
+									<TBODY>
+										<td>
+										<INPUT id="КУВУ_Снятие_с_охраны_исп" type=checkbox onclick="UpdateInputsUI()"> <label>Сообщение в RS интерфейс при снятии с охраны</label> <br>
+										<INPUT id="КУВУ_Снятие_с_охраны" type=text maxlength="60" style="width:300px">
+										</td>
+
+									</TBODY>
+								</TABLE>
+							</TD>
+						</TR>
+
+					</TABLE>
+					<TABLE id="table_outputs" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Настройка выходов</b></font></TD>
+						</TR>
+						<TR valign=top>
+							<TD class="page_body_style">
+								Выход 1 - Индикатор режима охраны<br>
+								<span style="width:320">Выход 2 - Сирена, длительность включения</span><INPUT id="Время_работы_сирены" type=text size=4 maxlength=4> мин.<br>
+								<span style="width:320">Выход 3 - Лампа, длительность включения</span><INPUT id="Время_работы_лампы" type=text size=4 maxlength=4> мин.<br>
+								<BR><BR>
+								<INPUT id="Питание_пожарного_датчика_вых3" type=checkbox onclick="UpdateInputsUI()"> <label>Использование Выхода 3 для питания пожарных датчиков. (Функции управления лампой не работают, сброс пожарных датчиков происходит при постановке/снятии с охраны, при касании ключом touch memory, при срабатывании датчиков периодически.)</label> <br>
+							</TD>
+						</TR>
+					</TABLE>
+					<TABLE id="table_dtmf_control" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Настройка DTMF управления (голосовое меню)</b></font></TD>
+						</TR>
+						<TR valign=top>
+							<TD class="page_body_style">
+								<div noWrap>Пароль для входа в голосовое меню<br><span class="descr">используйте символы: 123456789</span></div><INPUT id="ф_Пароль_для_входа_в_меню" type="text" size="60" maxlength="30"><br><br>
+								<div noWrap>Номера для входа без пароля<br><span class="descr">один или несколько через запятую</span></div><INPUT id="Ф_Номера_с_доступом_к_меню_без_пароля" type="text" size="60" maxlength="200"><br><br>
+								Доступ для разрешённых номеров <br><SELECT id="Доступ_дозвон_с_разрешённых_номеров_без_пароля" SIZE="1" onchange="UpdateIButtonUI();"><OPTION VALUE="1">Разрешён без пароля</OPTION><OPTION VALUE="0">Разрешён только по паролю</OPTION></SELECT><br><br>
+								Доступ для неразрешённых номеров <br><SELECT id="Доступ_дозвон_с_неразрешённых_номеров_по_паролю" SIZE="1" onchange="UpdateIButtonUI();"><OPTION VALUE="1">Разрешён только по паролю</OPTION><OPTION VALUE="0">Запрещён</OPTION></SELECT><br><br>
+								<br><br><br><br>
+								Вид голосового меню <br><SELECT id="Вид_голосового_меню" SIZE="1" onchange="UpdateIButtonUI();"><OPTION VALUE="0">Стандартное голосовое меню</OPTION><OPTION VALUE="1">Сокращённое голосовое меню</OPTION></SELECT><br><br>
+								<br><br><br>
+								<div id="dtmf_menu_short_setting">
+									<b>DTMF управление внешними устройствами</b><br>
+									<TABLE border=1 borderColor=#BBBBBB cellspacing=0 cellpadding=5 style="border-collapse:collapse">
+										<TR bgcolor=gainsboro><TD align=center width=100>DTMF команда</TD><TD>Сообщение отправляемое в RS-485</TD></TR>
+										<TR><TD>Клавиша 5</TD><TD><INPUT id="DTMF_команда_1" type="text" size="60" maxlength="70" ></TD></TR>
+										<TR><TD>Клавиша 6</TD><TD><INPUT id="DTMF_команда_2" type="text" size="60" maxlength="70" ></TD></TR>
+										<TR><TD>Клавиша 7</TD><TD><INPUT id="DTMF_команда_3" type="text" size="60" maxlength="70" ></TD></TR>
+										<TR><TD>Клавиша 8</TD><TD><INPUT id="DTMF_команда_4" type="text" size="60" maxlength="70" ></TD></TR>
+										<TR><TD>Клавиша 9</TD><TD><INPUT id="DTMF_команда_5" type="text" size="60" maxlength="70" ></TD></TR>
+									</TABLE>
+								</div>
+								<br><br><br>
+								<TABLE border=0 cellspacing=0 cellpadding=0>
+									<TR>
+										<TD nowrap class="t_help" onclick="ToggleHelp(this,'dtmf_control_help')" title="Нажмите чтобы отобразить/скрыть справку" background="img/help2.gif">
+											Показать справку
+										</TD>
+										<TD width=100%>&nbsp</TD>
+									</TR>
+									<TR id="dtmf_control_help" style="display:none">
+										<TD colspan=2>
+											<br>
+											<p style="text-align: justify"><b>DTMF управление</b> - управление устройством посредством DTMF сигналов в режиме голосового соединения (наподобие сервисной службы сотовых операторов). Руководствуясь голосовыми подсказками можно управлять выходами, узнать текущее состояние входов, запросить баланс карты, включить/выключить режим охраны.</p>
+											<p style="text-align: justify">Есть два варианта меню: стандартное и сокращённое. Стандартное меню унаследовано от предыдущей версии профиля Охрана квартиры. Сокращённое меню разработано по пожеланиям клиентов, оно позволяет более просто получить важную информацию об охраняемом объекте и более удобно и быстро управлять различными режимами. В сокращённом варианте голосового меню клавиши 5...9 задействованы под команды управления внешними устройствами.</p>
+											<b>Структура стандартного голосового меню:</b>
+											<ul type=circle>
+												<li>Главное меню</li>
+												<ul type=circle>
+													<li>Режим охраны</li>
+													<ul type=circle>
+														<li>Включение</li>
+														<li>Выключение</li>
+													</ul>
+													<li>Выходы</li>
+													<ul type=circle>
+														<li>Выбор выхода</li>
+														<ul type=circle>
+															<LI>Включение</LI>
+															<LI>Выключение</LI>
+														</ul>
+													</ul>
+													<li>Входы</li>
+													<ul type=circle>
+														<li>Состояние входов</li>
+													</ul>
+													<li>Получение баланса сим карты</li>
+												</ul>
+											</ul>
+											Для перехода из вложенных меню в главное следует нажать '#'. <br> <br>
+											<p style="text-align: justify"><b>Структура сокращённого голосового меню:</b><br>Сокращённое меню имеет неразветвлённую структуру(т.е. не имеет вложенных меню). При входе в меню озвучивается информация о состоянии режима охраны, состоянии охранных входов, и о состоянии пожарных входов. После произносится подсказка по DTMF командам:<br>1 - вкл./выкл. режима охраны<br>2 - снятие на 5 секунд питания с пожарных датчиков (выкл. выхода 3 - если он используется для этой цели)<br>3 - Включение режима акустического контроля<br>4 - запрос баланса сим-карты<br>5,6,7,8,9 - DTMF команды управления внешними устройствами<br># - Повтор</p>
+										</TD>
+									</TR>
+								</TABLE>
+							</TD>
+						</TR>
+					</TABLE>
+					<TABLE id="table_touch_memory" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Настройка Touch Memory</b></font></TD>
+						</TR>
+						<TR valign=top>
+							<TD class="page_body_style">
+							    Назначение интерфейса iButton <SELECT id="Использование_термометра_DS18s20" SIZE="1" onchange="UpdateIButtonUI();"><OPTION VALUE="0">Электронные ключи DS1990A</OPTION><OPTION VALUE="1">Цифровой термометр DS18S20</OPTION></SELECT><br>
+							    <br>
+							    <div id="ibutton_keys_settings">
+								    <INPUT id="Стирание_ключей_из_памяти" type=checkbox><LABEL for="Стирание_ключей_из_памяти"> Удалить все ключи из памяти контроллера </LABEL><br>
+								    <br>
+								    Добавление новых ключей: <SELECT id="Настройка_Touch_memory" SIZE="1"><OPTION VALUE="Разрешить_запоминание_новых_эл_ключей 0 Установить_режим_выхода3">Разрешить</OPTION><OPTION VALUE="Запретить_запоминание_новых_эл_ключей 1 Установить_режим_выхода3">Запретить</OPTION></SELECT><br>
+								    <br>
+								    <br>
+								    <TABLE border=0 cellspacing=0 cellpadding=0>
+									    <TR>
+										    <TD nowrap class="t_help" onclick="ToggleHelp(this,'touch_memory_help')" title="Нажмите чтобы отобразить/скрыть справку" background="img/help2.gif">
+											    Показать справку
+										    </TD>
+										    <TD width=100%>&nbsp</TD>
+									    </TR>
+									    <TR id="touch_memory_help" style="display:none">
+										    <TD colspan=2>
+											    <br>
+											    <p style="text-align: justify">
+												    Информатор Омега-MG20 позволяет использовать до 60-ти электронных ключей DS1990. Индикация режима работы обеспечивается одним светодиодом (жёлтого цвета).
+											    </p>
+											    <b>Программирование электронных ключей.</b>
+											    <p style="text-align: justify">
+												    В начальном состоянии память устройства не содержит ключей – в этом случае любой ключ DS1990 считается рабочим ключом. После запоминания хотя бы одного ключа, все остальные ключи считаются нерабочими.
+											    </p>
+											    <p style="text-align: justify">
+												    Для добавления или удаления ключей нужно перевести Информатор в режим программирования. Для этого необходимо коснуться рабочим ключом считывателя и удерживать его 30 секунд. После входа в режим программирования светодиод начинает мигать с частотой несколько раз в секунду. При касании ключом считывателя в этом режиме светодиод гаснет, если этого ключа нет в памяти или горит постоянно, если этот ключ есть в памяти контроллера. При касании ключом считывателя более 5-ти секунд ключ добавляется в память, если он был нерабочим или удаляется, если он был рабочим.
+											    </p>
+										    </TD>
+									    </TR>
+								    </TABLE>
+								</div>
+								<div id="ibutton_thermometer_settings">
+								    <table>
+								        <tr><td>Верхний порог срабатывания (°C)</td><td><INPUT id="Верхний_порог_DS18s20" type="text" size="5" maxlength="3"></td></tr>
+								        <tr><td>Нижний порог срабатывания (°C)</td><td><INPUT id="Нижний_порог_DS18s20" type="text" size="5" maxlength="3"></td></tr>
+								        <tr><td>&nbsp</td></tr>
+								        <tr><td colspan=2><b>Действия при выходе температуры за верхний порог</b></td></tr>
+								        <tr>
+								            <td colspan=2>
+                                                <table id="action_hi_temperature" border=0>
+									                <tr>
+										                <td width=160>
+											                <INPUT id="Дозвон_при_Превышении_DS18s20" type=checkbox onclick="UpdateTemperatureUI();"><LABEL for="Дозвон_при_Превышении_DS18s20"> Дозвон </LABEL><br>
+											                <INPUT id="СМС_при_Превышении_DS18s20" type=checkbox onclick="UpdateInputsUI()"><LABEL for="СМС_при_Превышении_DS18s20"> SMS </LABEL><br>
+											                <INPUT id="Включение_сирены_при_Превышении_DS18s20" type=checkbox><LABEL for="Включение_сирены_при_Превышении_DS18s20"> Включать сирену </LABEL><br>
+											                <INPUT id="Выключение_сирены_при_Превышении_DS18s20" type=checkbox><LABEL for="Выключение_сирены_при_Превышении_DS18s20"> Выключать сирену </LABEL><br>
+											                <INPUT id="Включение_лампы_при_Превышении_DS18s20" type=checkbox><LABEL for="Включение_лампы_при_Превышении_DS18s20"> Включать лампу </LABEL><br>
+											                <INPUT id="Выключение_лампы_при_Превышении_DS18s20" type=checkbox><LABEL for="Выключение_лампы_при_Превышении_DS18s20"> Выключать лампу </LABEL>
+										                </td>
+									                </tr>
+									                <tr>
+										                <td>
+										                    <label id="метка_Звук_для_дозвона_при_Превышении_DS18s20">Голосовое сообщение</label>
+										                </td>
+										                <td>
+											                <SELECT id="Звук_для_дозвона_при_Превышении_DS18s20" SIZE="1" style="width:300px"><OPTION VALUE="Звук_Нет_звука">-</OPTION><OPTION VALUE="Звук_Тревога_обнаружено_движение">Тревога обнаружено движение</OPTION><OPTION VALUE="Звук_Внимание_протекание_воды">Внимание протекание воды</OPTION><OPTION VALUE="Звук_Тревога_пожар">Тревога пожар</OPTION><OPTION VALUE="Звук_Тревога_разбито_стекло">Тревога разбито стекло</OPTION><OPTION VALUE="Звук_Тревога_нажата_тревожная_кнопка">Тревога нажата тревожная кнопка</OPTION><OPTION VALUE="Звук_Тревога_прихожая">Тревога прихожая</OPTION><OPTION VALUE="Звук_Тревога_зал">Тревога зал</OPTION><OPTION VALUE="Звук_Тревога_кухня">Тревога кухня</OPTION><OPTION VALUE="Звук_Тревога_детская">Тревога детская</OPTION><OPTION VALUE="Звук_Тревога_комната1">Тревога комната 1</OPTION><OPTION VALUE="Звук_Тревога_комната2">Тревога комната 2</OPTION><OPTION VALUE="Звук_Тревога_комната3">Тревога комната 3</OPTION><OPTION VALUE="Звук_Завышенная_температура">Внимание завышенная температура</OPTION><OPTION VALUE="Звук_Заниженная_температура">Внимание заниженная температура</OPTION></SELECT>
+										                </td>
+									                </tr>
+									                <tr>
+										                <td>
+										                    <label id="метка_Текст_СМС_при_Превышении_DS18s20">Текст SMS сообщения</label>
+										                </td>
+										                <td>
+											                <INPUT id="Текст_СМС_при_Превышении_DS18s20" type=text maxlength="60" style="width:300px"><br>
+										                </td>
+									                </tr>
+								                </table>
+								            </td>
+								        </tr>
+								        <tr><td>&nbsp</td></tr>
+								        <tr><td colspan=2><b>Действия при выходе температуры за нижний порог</b></td></tr>
+								        <tr>
+								            <td colspan=2>
+                                                <table id="action_low_temperature" border=0>
+									                <tr>
+										                <td width=160>
+											                <INPUT id="Дозвон_при_Пренижении_DS18s20" type=checkbox onclick="UpdateTemperatureUI();"><LABEL for="Дозвон_при_Пренижении_DS18s20"> Дозвон </LABEL><br>
+											                <INPUT id="СМС_при_Пренижении_DS18s20" type=checkbox onclick="UpdateInputsUI()"><LABEL for="СМС_при_Пренижении_DS18s20"> SMS </LABEL><br>
+											                <INPUT id="Включение_сирены_при_Пренижении_DS18s20" type=checkbox><LABEL for="Включение_сирены_при_Пренижении_DS18s20"> Включать сирену </LABEL><br>
+											                <INPUT id="Выключение_сирены_при_Пренижении_DS18s20" type=checkbox><LABEL for="Выключение_сирены_при_Пренижении_DS18s20"> Выключать сирену </LABEL><br>
+											                <INPUT id="Включение_лампы_при_Пренижении_DS18s20" type=checkbox><LABEL for="Включение_лампы_при_Пренижении_DS18s20"> Включать лампу </LABEL><br>
+											                <INPUT id="Выключение_лампы_при_Пренижении_DS18s20" type=checkbox><LABEL for="Выключение_лампы_при_Пренижении_DS18s20"> Выключать лампу </LABEL>
+										                </td>
+									                </tr>
+									                <tr>
+										                <td>
+											                <label id="метка_Звук_для_дозвона_при_Пренижении_DS18s20">Голосовое сообщение</label>
+										                </td>
+										                <td>
+											                <SELECT id="Звук_для_дозвона_при_Пренижении_DS18s20" SIZE="1" style="width:300px"><OPTION VALUE="Звук_Нет_звука">-</OPTION><OPTION VALUE="Звук_Тревога_обнаружено_движение">Тревога обнаружено движение</OPTION><OPTION VALUE="Звук_Внимание_протекание_воды">Внимание протекание воды</OPTION><OPTION VALUE="Звук_Тревога_пожар">Тревога пожар</OPTION><OPTION VALUE="Звук_Тревога_разбито_стекло">Тревога разбито стекло</OPTION><OPTION VALUE="Звук_Тревога_нажата_тревожная_кнопка">Тревога нажата тревожная кнопка</OPTION><OPTION VALUE="Звук_Тревога_прихожая">Тревога прихожая</OPTION><OPTION VALUE="Звук_Тревога_зал">Тревога зал</OPTION><OPTION VALUE="Звук_Тревога_кухня">Тревога кухня</OPTION><OPTION VALUE="Звук_Тревога_детская">Тревога детская</OPTION><OPTION VALUE="Звук_Тревога_комната1">Тревога комната 1</OPTION><OPTION VALUE="Звук_Тревога_комната2">Тревога комната 2</OPTION><OPTION VALUE="Звук_Тревога_комната3">Тревога комната 3</OPTION><OPTION VALUE="Звук_Завышенная_температура">Внимание завышенная температура</OPTION><OPTION VALUE="Звук_Заниженная_температура">Внимание заниженная температура</OPTION></SELECT>
+										                </td>
+									                </tr>
+									                <tr>
+										                <td>
+										                    <label id="метка_Текст_СМС_при_Пренижении_DS18s20">Текст SMS сообщения</label>
+										                </td>
+										                <td>
+											                <INPUT id="Текст_СМС_при_Пренижении_DS18s20" type=text maxlength="60" style="width:300px"><br>
+										                </td>
+									                </tr>
+								                </table>
+								            </td>
+								        </tr>
+								        <tr><td>&nbsp</td></tr>
+								        <tr><td colspan=2><b>Телефонные номера</b></td></tr>
+								        <TR><TD><div noWrap>Номера для дозвона<br><span class="descr">один или несколько через запятую</span></div></TD><TD><INPUT id="Ф_Номера_для_дозвона_при_срабатывании_DS18s20" type="text" size="60" maxlength="200"></TD></TR>
+										<TR><TD><div noWrap>Номера для отправки SMS<br><span class="descr">один или несколько через запятую</span></div></TD><TD><INPUT id="Ф_Номера_для_отправки_СМС_при_срабатывании_DS18s20" type="text" size="60" maxlength="200"></TD></TR>
+								    </table>
+								    
+								    <br>
+								    <TABLE border=0 cellspacing=0 cellpadding=0>
+									    <TR>
+										    <TD nowrap class="t_help" onclick="ToggleHelp(this,'thermometer_help')" title="Нажмите чтобы отобразить/скрыть справку" background="img/help2.gif">
+											    Показать справку
+										    </TD>
+										    <TD width=100%>&nbsp</TD>
+									    </TR>
+									    <TR id="thermometer_help" style="display:none">
+										    <TD colspan=2>
+											    <br>
+											    <p style="text-align: justify">
+												    <b>Описание:</b><br>
+												    <br>
+												    Цифровой термометр DS18S20 обеспечивает 9-12 битные температурные измерения по шкале Цельсия и имеет сигнальную функцию с верхней и нижней точками переключения, программируемыми пользователем и хранящимися в энергонезависимой памяти (EEPROM). Микросхема DS18S20 подключается через 1-проводную шину, которая по определению требует только одной линии данных (а также общей) для взаимодействия с центральным процессором. Она имеет рабочий температурный диапазон от -55°C до +125°C и точность ±0.5°C в диапазоне от -10°C до +85°C. Также микросхема DS18S20 может запитываться прямо с линии данных ("паразитное питание"), устраняя необходимость во внешнем источнике питания.<br>
+												    <br>
+												    <b>Назначение выводов:</b><br>
+												    <center><img src="img/18s20_p.gif" /></center>
+												    <br>
+												    Cледует использовать схему подключения термодатчика с паразитным питанием (Вывод Vdd подключается к GND).
+											    </p>
+										    </TD>
+									    </TR>
+								    </TABLE>
+								    
+								</div>
+							</TD>
+						</TR>
+					</TABLE>
+					<TABLE id="table_power" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Настройка питания</b></font></TD>
+						</TR>
+						<TR valign=top>
+							<TD class="page_body_style">
+								<FIELDSET style="width: 200;" align=top>
+									<LEGEND>При пропадании основного питания</LEGEND>
+									<INPUT id="Дозвон_при_пропадании_основного_питания" type=checkbox><LABEL for="Дозвон_при_пропадании_основного_питания"> Дозвон </LABEL><br>
+									<INPUT id="СМС_при_пропадании_основного_питания" type=checkbox><LABEL for="СМС_при_пропадании_основного_питания"> SMS </LABEL><br>
+								</FIELDSET>&nbsp&nbsp&nbsp
+								<FIELDSET style="width: 200;" align=top>
+									<LEGEND>При появлении основного питания</LEGEND>
+									<INPUT id="Дозвон_при_появлении_основного_питания" type=checkbox><LABEL for="Дозвон_при_появлении_основного_питания"> Дозвон </LABEL><br>
+									<INPUT id="СМС_при_появлении_основного_питания" type=checkbox><LABEL for="СМС_при_появлении_основного_питания"> SMS </LABEL><br>
+								</FIELDSET>
+								<br><br>
+								<TABLE border=0>
+									<TBODY>
+										<TR><TD><div noWrap>Номера для дозвона<br><span class="descr">один или несколько через запятую</span></div></TD><TD><INPUT id="Ф_Номера_для_дозвона_при_пропадании_или_появлении_питания" type="text" size="60" maxlength="200"></TD></TR>
+										<TR><TD><div noWrap>Номера для отправки SMS<br><span class="descr">один или несколько через запятую</span></div></TD><TD><INPUT id="Ф_Номера_для_отправки_СМС_при_или_появлении_пропадании_питания" type="text" size="60" maxlength="200"></TD></TR>
+									</TBODY>
+								</TABLE>
+								<br><br><br>
+
+								<!-- Справка по вкладке ПИТАНИЕ -->
+								<TABLE border=0 cellspacing=0 cellpadding=0>
+									<TR>
+										<TD nowrap class="t_help" onclick="ToggleHelp(this,'power_help')" title="Нажмите чтобы отобразить/скрыть справку" background="img/help2.gif">
+											Показать справку
+										</TD>
+										<TD width=100%>&nbsp</TD>
+									</TR>
+									<TR id="power_help" style="display:none">
+										<TD colspan=2>
+											<br>
+											Если к информатору подключен резервный источник питания (см. схему подключения), то возможно настроить уведомления о пропадании/появлении основного питания.
+										</TD>
+									</TR>
+								</TABLE>
+							</TD>
+						</TR>
+					</TABLE>
+					<TABLE id="table_internet" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Интернет</b></font></TD>
+						</TR>
+						<TR valign=top>
+							<TD class="page_body_style">
+							    <div noWrap>Точка доступа, логин, пароль<br><span class="descr">логин и пароль если требуются через запятую</span></div><INPUT id="GPRS_Точка_доступа" type="text" size="60" maxlength="200"><br>
+							    <br>
+							    <div noWrap>e-mail для отправки фотографий<br><span class="descr">один или несколько через запятую</span></div><INPUT id="EMAIL_Для_отправки_фотоснимков" type="text" size="60" maxlength="200"><br>
+							    <br>
+							    <div noWrap>Тема письма</div><INPUT id="Тема_письма" type="text" size="60" maxlength="200"><br>
+							</TD>
+						</TR>
+					</TABLE>
+					<TABLE id="table_connect" height="100%" width="100%" border="0" style="display: none" class="page_style" >
+						<TR>
+							<TD height=30 bgcolor=#A4B97F align=center valign=middle><font color=white size=2><b>Схема подключения устройства</b></font></TD>
+						</TR>
+						<TR valign=top>
+							<TD class="page_body_style">
+								<p style="text-align: justify">Установка:</p>
+								<img src="img/scheme.gif">
+								<p style="text-align: justify"><font color=red><b>R=5.6 КОм.</b></font></p>
+								<p style="text-align: justify"><font color=red><b>Установите переключатели SW1 SW2 в соответствии с рисунком.</b></font></p>
+								<p style="text-align: justify">Подключение производится через клеммник проводом сечением до 0,35 мм2. Для зажима провода в клеммник плоской отвёрткой нажимается рычаг зажимного механизма, вставляется зачищенный провод до упора, рычаг отжимается.</p>
+								<b>Подключение питания</b>
+								<p style="text-align: justify">Источник питания +12 вольт подключается к клеммам +Питание и –Питание.  Он должен обеспечивать выходной ток 0.5А. Аккумулятор (12В)  для резервного питания подключается к клеммам +Аккумулятор и – Аккумулятор. Следует использовать свинцовые аккумуляторы. Если аккумулятор используется, то напряжение основного источника питания должно быть 14-16 вольт.</p>
+								<b>Подключение выходов</b>
+								<p style="text-align: justify">Исполнительные устройства (например сирена и т.д.) подключаются к выходным клеммам Информатора («Выход +» и «Выход –»). На контакте «Выход +» постоянно присутствует напряжение +12В. При включении выхода цепь «Выход –» коммутируется на корпус. Нагрузки, подключаемые к выходам, должны потреблять ток не более 300 мА. Для подключения более мощных нагрузок используйте реле. При наличии короткого замыкания на одном из выходов все выходы выключаются до исчезновения замыкания.</p>
+								<b>Подключение внешних устройств</b>
+								<p style="text-align: justify">Для программирования Информатора, для связи с компьютером, а также для организации сети из нескольких устройств используется последовательный порт с уровнем напряжения 5 В. При подключении к СОМ порту персонального компьютера используется специальный адаптер. Длина кабеля при использовании данного порта не должна превышать 10м. При подключении адаптера персонального компьютера провод с красной полосой должен подключаться к клемме «RS+», черный провод без полосы к клемме «RS-». Кроме этого Информатор содержит порт RS-485 для связи между устройствами, если они находятся на большом расстоянии (до 1 км). Для подключения Информатора к сети RS-485 используются клеммы RS-485A, RS-485B и RS-485 общий. Если устройство является крайним на линии (подключено к концу линии), то должен быть подключен терминатор (микропереключатель SW2.3 включен).</p>
+								<b>Подключение Touch Memory</b>
+								<p style="text-align: justify">Производится к клеммам «Touch Memory+» и «Touch Memory-». Длина проводов - до 30 метров.</p>
+								<b>Подключение антенны</b>
+								<p style="text-align: justify">Антенна привинчивается к антенному разъёму извещателя. Может использоваться антенна, прилагаемая в комплекте, или другая GSM антенна с таким же разъёмом. Не рекомендуется включать Информатор без подключенной антенны.</p>
+								<b>Назначение группы микропереключателей SW2</b>
+								<br>
+								1 - Запрет выполнения профиля. В положение On выполнение профиля запрещено. Вступает в силу после включения питания.<br>
+								2 - Защита профиля. В положении On устанавливается запрет на модификацию профиля. Модификация звукового контейнера не запрещается.<br>
+								3 - RS-485 терминатор. В положении On подключение резистора(терминатора) на выход интерфейса RS-485. Если информатор подключен к сети RS-485 и является крайним устройством, то переключатель должен быть включен. В сети должно быть два устройства с подключенными терминаторами (два крайних устройства).<br>
+								<br><br>
+								<br><br>
+								<br><br>
+								<b>Управление Информатором по RS сети.</b><br>
+								Внешние устройства могут использовать следующие ф-ции Информатора:<br>
+								-	Дозвон с заданным озвучиванием на заданные номера<br>
+								-	СМС на заданные номера<br>
+								-	Управление индикацией тревоги<br>
+								-	Управление сиреной и лампой<br>
+								<br><br>
+								Описание команд внешнего управления Информатором:<br>
+								#Mod()	-	Обрамление любой команды в скобках идут сами команды<br>
+								N=		-	Назначение номера для дозвона, отправки СМС(=Тел.номер)<br>
+								S=		-	Отправка СМС  (=Текст смс)<br>
+								D=		-	Дозвон с голосовым сообщением (=Номер оповещения см.ниже)<br>
+								I=		-	Включение индикации тревоги (=1 Охранная =2 Пожарная)<br>
+								OnS		-	Включение сирены<br>
+								OnL		-	Включение лампы<br>
+								
+								После команд назначения номера и отправки СМС должна ставиться ;<br>
+								Длина сообщения не может превышать 70 символов.<br>
+								<br>
+								Пример:
+								<br>
+								#Mod(N=+79111111111;D=1S=Тревога комната 123;I=1OnS)<br>
+								<br>
+								Список номеров голосовых оповещений:<br>
+								0	-	Тревога обнаружено движение<br>
+								1	-	Внимание протекание воды<br>
+								2	-	Тревога пожар<br>
+								3	-	Тревога разбито стекло<br>
+								4	-	Тревога нажата тревожная кнопка<br>
+								5	-	Тревога прихожая<br>
+								6	-	Тревога зал<br>
+								7	-	Тревога кухня<br>
+								8	-	Тревога детская<br>
+								9	-	Тревога комната1<br>
+								10	-	Тревога комната2<br>
+								11	-	Тревога комната3<br>
+								12	-	Режим охраны включен<br>
+								13	-	Режим охраны выключен<br>
+								14	-	Пропадание питания<br>
+								15	-	Появление питания<br>
+								16	-	Завышенная температура<br>
+								17	-	Заниженная температура<br>
+								<br><br>
+							</TD>
+						</TR>
+					</TABLE>
+				</DIV>
+			</TD>
+		</TR>
+		<!--
+		<TR>
+			<TD>
+			</TD>
+			<TD align=right class="acmd">
+				<span id="ct_programming" class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'">Записать профиль в устройство</span>&nbsp&nbsp&nbsp
+				<span id="ct_programming_ex" ct_file="охрана квартиры.psnd" class="acmd_out" onmouseover="this.className='acmd_over'" onmouseout="this.className='acmd_out'">Записать файл звуков в устройство</span>
+			</TD>
+		</TR>
+		-->
+	</TABLE>
+<br>
+<TABLE align=center>
+<TR><TD>
+	<a href="http://www.microline.ru/omega_mg20.php?m=300" target=_blank>Другие профили на сайте производителя</a>
+</TD></TR>
+</TABLE>
+
+</BODY>
+
+<SCRIPT language="javascript">
+
+var	g_tabs_arr = new Array( "tab_info", "tab_sms_control", "tab_inputs", "tab_outputs", "tab_guard_mode", "tab_dtmf_control", "tab_touch_memory", "tab_power", "tab_internet", "tab_connect" );
+var	g_pages_arr = new Array( "table_info", "table_sms_control", "table_inputs", "table_outputs", "table_guard_mode", "table_dtmf_control", "table_touch_memory", "table_power", "table_internet", "table_connect" );
+
+function SelectPage( page_id, tab_id )
+{
+	var	bFilters = document.all[ page_id ].filters;
+	if( bFilters ) document.all[ page_id ].filters[0].Apply();
+	for( i = 0; i < g_pages_arr.length; i++ )
+	{
+		document.all[ g_pages_arr[i] ].style.display = "none";
+		document.all[ g_tabs_arr[i] ].className = "inactive_tab";
+	}
+	document.all[ tab_id ].className = "active_tab";
+	document.all[ page_id ].style.display = "";
+	if( bFilters ) document.all[ page_id ].filters[0].Play();
+}
+
+function TabOver( tab )
+{
+	if( tab.className == "active_tab" || tab.className == "mouseover_tab" ) return;
+	tab.className = "mouseover_tab";
+}
+
+function TabOut( tab )
+{
+	if( tab.className == "active_tab" || tab.className == "inactive_tab" ) return;
+	tab.className = "inactive_tab";
+}
+
+function ToggleHelp( parent_tag, help_tag_id )
+{
+	if( document.all[ help_tag_id ].style.display == '' )
+	{
+		document.all[ help_tag_id ].style.display = 'none';
+		parent_tag.innerText = "Показать справку";
+	}
+	else
+	{
+		document.all[ help_tag_id ].style.display = '';
+		parent_tag.innerText = "Скрыть справку";
+	}
+}
+
+function UpdateDetectorUI(sel_tag, child_id)
+{
+	document.all[child_id].style.display=sel_tag.value=='Настройки_выключенного_входа'?'none':'';
+}
+
+function UpdateCallSMSUI(check_tag, child_label_id, child_obj_id)
+{
+	document.all[child_label_id].disabled=!check_tag.checked;
+	document.all[child_obj_id].disabled=!check_tag.checked;
+}
+
+function UpdateKUVUUI(check_tag,  child_obj_id)
+{
+	document.all[child_obj_id].disabled=!check_tag.checked;
+}
+
+
+function UpdateInputsUI()
+{
+	UpdateDetectorUI( document.all['Настройка_датчика1'], 'table_input_1' );
+	UpdateCallSMSUI( document.all['Дозвон_при_срабатывании_входа1'], 'метка_Звук_для_дозвона_по_входу1','Звук_для_дозвона_по_входу1' );
+	UpdateCallSMSUI( document.all['СМС_при_срабатывании_входа1'], 'метка_Текст_СМС_для_входа1','Текст_СМС_для_входа1' );
+	UpdateDetectorUI( document.all['Настройка_датчика2'], 'table_input_2' );
+	UpdateCallSMSUI( document.all['Дозвон_при_срабатывании_входа2'], 'метка_Звук_для_дозвона_по_входу2','Звук_для_дозвона_по_входу2' );
+	UpdateCallSMSUI( document.all['СМС_при_срабатывании_входа2'], 'метка_Текст_СМС_для_входа2','Текст_СМС_для_входа2' );
+	UpdateDetectorUI( document.all['Настройка_датчика3'], 'table_input_3' );
+	UpdateCallSMSUI( document.all['Дозвон_при_срабатывании_входа3'], 'метка_Звук_для_дозвона_по_входу3','Звук_для_дозвона_по_входу3' );
+	UpdateCallSMSUI( document.all['СМС_при_срабатывании_входа3'], 'метка_Текст_СМС_для_входа3','Текст_СМС_для_входа3' );
+	UpdateDetectorUI( document.all['Настройка_датчика4'], 'table_input_4' );
+	UpdateCallSMSUI( document.all['Дозвон_при_срабатывании_входа4'], 'метка_Звук_для_дозвона_по_входу4','Звук_для_дозвона_по_входу4' );
+	UpdateCallSMSUI( document.all['СМС_при_срабатывании_входа4'], 'метка_Текст_СМС_для_входа4','Текст_СМС_для_входа4' );
+	UpdateDetectorUI( document.all['Настройка_датчика5'], 'table_input_5' );
+	UpdateCallSMSUI( document.all['Дозвон_при_срабатывании_входа5'], 'метка_Звук_для_дозвона_по_входу5','Звук_для_дозвона_по_входу5' );
+	UpdateCallSMSUI( document.all['СМС_при_срабатывании_входа5'], 'метка_Текст_СМС_для_входа5','Текст_СМС_для_входа5' );
+	UpdateDetectorUI( document.all['Настройка_датчика6'], 'table_input_6' );
+	UpdateCallSMSUI( document.all['Дозвон_при_срабатывании_входа6'], 'метка_Звук_для_дозвона_по_входу6','Звук_для_дозвона_по_входу6' );
+	UpdateCallSMSUI( document.all['СМС_при_срабатывании_входа6'], 'метка_Текст_СМС_для_входа6','Текст_СМС_для_входа6' );
+
+	UpdateKUVUUI( document.all['КУВУ_Вход1_исп'], 'КУВУ_Вход1' );
+	UpdateKUVUUI( document.all['КУВУ_Вход2_исп'], 'КУВУ_Вход2' );
+	UpdateKUVUUI( document.all['КУВУ_Вход3_исп'], 'КУВУ_Вход3' );
+	UpdateKUVUUI( document.all['КУВУ_Вход4_исп'], 'КУВУ_Вход4' );
+	UpdateKUVUUI( document.all['КУВУ_Вход5_исп'], 'КУВУ_Вход5' );
+	UpdateKUVUUI( document.all['КУВУ_Вход6_исп'], 'КУВУ_Вход6' );
+	UpdateKUVUUI( document.all['КУВУ_Постановка_на_охрану_исп'], 'КУВУ_Постановка_на_охрану' );
+	UpdateKUVUUI( document.all['КУВУ_Снятие_с_охраны_исп'], 'КУВУ_Снятие_с_охраны' );
+	
+	UpdateInput6UI();
+	UpdateIButtonUI();
+	UpdateTemperatureUI();
+}
+
+function UpdateTemperatureUI()
+{
+	UpdateCallSMSUI( document.all['Дозвон_при_Превышении_DS18s20'], 'метка_Звук_для_дозвона_при_Превышении_DS18s20','Звук_для_дозвона_при_Превышении_DS18s20' );
+	UpdateCallSMSUI( document.all['СМС_при_Превышении_DS18s20'], 'метка_Текст_СМС_при_Превышении_DS18s20','Текст_СМС_при_Превышении_DS18s20' );
+	UpdateCallSMSUI( document.all['Дозвон_при_Пренижении_DS18s20'], 'метка_Звук_для_дозвона_при_Пренижении_DS18s20','Звук_для_дозвона_при_Пренижении_DS18s20' );
+	UpdateCallSMSUI( document.all['СМС_при_Пренижении_DS18s20'], 'метка_Текст_СМС_при_Пренижении_DS18s20','Текст_СМС_при_Пренижении_DS18s20' );
+}
+
+function UpdateInput6UI()
+{
+    document.all['in6_typical_settings'].style.display = 'none';
+    document.all['in6_guard_settings'].style.display = 'none';
+    
+    if( document.all['вход6_назначение_обычный_вход'].checked )
+    {
+        document.all['in6_typical_settings'].style.display = '';
+    }
+    else if( document.all['Использование_6го_входа_для_постановки_снятия'].checked )
+    {
+        document.all['in6_guard_settings'].style.display = '';
+    }
+}
+
+function UpdateIButtonUI()
+{
+    document.all['ibutton_keys_settings'].style.display = 'none';
+    document.all['ibutton_thermometer_settings'].style.display = 'none';
+    
+    var mode = document.all['Использование_термометра_DS18s20'].value;
+
+    if( mode == 0 )
+    {
+        document.all['ibutton_keys_settings'].style.display = '';
+    }
+    else if( mode == 1 )
+    {
+        document.all['ibutton_thermometer_settings'].style.display = '';
+    }
+
+mode = document.all['Вид_голосового_меню'].value;
+    if( mode == 0 )
+    {
+        document.all['dtmf_menu_short_setting'].style.display = 'none';
+    }
+    else if( mode == 1 )
+    {
+        document.all['dtmf_menu_short_setting'].style.display = '';
+    }
+
+
+}
+
+function PlayFilters()
+{
+	var	bFilters = document.all[ 'microline_logo' ].filters;
+	if( bFilters ) document.all[ 'microline_logo' ].filters[0].Apply();
+	document.all[ 'microline_logo' ].style.visibility = "visible";
+	if( bFilters ) document.all[ 'microline_logo' ].filters[0].Play();
+}
+
+function CheckCancel()
+{
+    if( event.srcElement.tagName != "INPUT" )
+    {
+        event.cancelBubble = true;
+        return false;
+    }
+    return true;
+}
+
+</SCRIPT>
+
+</HTML>
