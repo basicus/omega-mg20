@@ -14,12 +14,11 @@
 #define C_DST "dst="
 
 
-char *buffer;
-const char h[]={0x02, 0x4d, 0x6c, 0x02};
-char* hdr=&h;
+//char *buffer;
+
 pthread_mutex_t ser_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-unsigned short SUM_CRC ( char *Address, unsigned char Lenght)
+unsigned short SUM_CRC (char *Address, unsigned char Lenght)
 {
 int N;
 unsigned short WCRC=0;
@@ -31,11 +30,11 @@ for (N=1;N<=Lenght;N++,Address++)
 return WCRC;
 }
 
-int CreateTextMessage ( unsigned char src, unsigned char dst, char* message, char* buffer)
+int CreateTextMessage ( unsigned char src, unsigned char dst, char* message,char* buffer)
 {
 unsigned char len=strlen(message)+1;
 unsigned short crc;
-unsigned short l;
+unsigned short l,n;
 char *send=malloc(len+1);
 send[0]=0x20;
 memcpy(send+1,message,len+1);
@@ -55,22 +54,23 @@ l=len+9;
 //for(n=0; n<l; n++)
 //    printf("%02x",(unsigned char)buffer[n]);
 //printf ("\n");
+free (send);
 return l;
 }
 
-int ParseBufferMessage ( unsigned char* src, unsigned char* dst, char* message,char* bfr, int l)
+int ParseBufferMessage ( unsigned char* src, unsigned char* dst,char *message,char *bfr, int l,char *hdr)
 {
 int offset; // найденное смещение от начала буффера
 unsigned short len; // найденная длина текстового сообщения
-unsigned short crc; // контрольная сумма
+unsigned short crc,crc2; // контрольная сумма
 unsigned char flag=0;
 
 char* msg; // указатель на предполагаемое начало сообщения
 // Поиск заголовка в буффере
-msg = (char*) memchr(bfr, *hdr,l);
+msg = (char*) memchr(bfr, hdr[0],l);
 while ( msg != NULL ) {
 if ( memcmp(hdr,msg,4)!=0 ) { // не нашли заголовок в буффере
-			    offset=&msg[0]-&bfr[0]; // находим смещение и ищем следующее вхождение
+			    offset=msg[0]-bfr[0]; // находим смещение и ищем следующее вхождение
 			    //printf ("Offset1 =%d, A1= %p; A2=%p\n",offset,msg,bfr);
 			    msg = (char*) memchr(bfr+offset+1, *hdr,l-offset-1);
 			    }
@@ -79,14 +79,15 @@ if ( memcmp(hdr,msg,4)!=0 ) { // не нашли заголовок в буфф�
 
 if ( flag==0 ) return 1; // заголовок в буффере не найден
 
-offset=&msg[0]-&bfr[0];
+offset=msg[0]-bfr[0];
 //printf ("Offset2 = %d,A1= %p; A2=%p\n",offset,msg,bfr);
 // Проверка CRC
 *src= msg[5];
 *dst= msg[4];
 len= msg[6];
 memcpy(&crc,msg+7+len,2);
-if ( crc != SUM_CRC(msg+4,len+3) ) { return 2; }
+crc2=SUM_CRC(&msg[4],len+3);
+if ( crc != crc2 ) { return 2; }
 memcpy(message,msg+7,len+1);
 //printf ("SRC=%d,DST=%d, MSG=%s\n",*src,*dst, message);
 // Изменяем значение указателя буффера на указатель конца сообщения
@@ -101,13 +102,15 @@ return offset+len+9;
 
 
 void * ReadSerial (void *parm) {
-char *reply=malloc(256);
+char *reply=malloc(512);
+char *buffer=malloc(1024);
+const unsigned char h[]={0x02, 0x4d, 0x6c, 0x02};
 unsigned char s;
 unsigned char d;
 unsigned short r=0;
 int fd=*(int *)parm;
 int r1;
-unsigned short n;
+unsigned short n,i;
 
 
 while( 1 ) {
@@ -120,13 +123,13 @@ while( 1 ) {
 	  //printf ("Readed some info %d:%d\n",r1,r);
 	  //for(i=0; i<r1; i++) printf("%02x",(unsigned char)buffer[i]);
 	  //printf ("\n");
-	  n  =  ParseBufferMessage(&s,&d,reply,buffer,r);
+	  n  =  ParseBufferMessage(&s,&d,reply,buffer,r,&h);
 	  if ( n > 2 ) {
 	    r = r - n;
 	    //printf ("New r=%d, n=%d, src=%d; dst=%d\n",r,n,s,d);
 	    printf ("\nSRC=%d DST=%d>%s",s,d,reply);
-	    if ( r >0 ) memcpy(buffer, buffer+n, r); // копируем оставшееся сообщение в начало
-		else memset(buffer,0x00,n);
+	    if ( r >0 ) {memcpy(buffer, buffer+n, r);} // копируем оставшееся сообщение в начало
+            else {memset(buffer,0x00,n);}
 	  }
     }
 }
@@ -143,7 +146,7 @@ unsigned char ds=0x00;
 int l,ds_n;
 struct termios options;
 int fd;
-char * port;
+char *port;
 char *parse;
 /*
 Если количество аргументов равно нулю, то мы запускаемся со стандартными параметрами
@@ -171,9 +174,9 @@ options.c_cc[VMIN]     = 0;     /* read by char */
 tcflush(fd, TCIFLUSH);
 tcsetattr(fd, TCSANOW, &options);
 
-buffer=malloc(1024);
+//buffer=malloc(1024);
 pthread_create(&thread_read,NULL, &ReadSerial, &fd);
-printf ("OMEGA-MG20 serial comman line tool. Version %d.%d%s (c) Sergey Butenin.\nUsing port=%s, src address=%d, destination=%d\n",MAJOR,MINOR,STATUS_SHORT,port,sr,ds);
+printf ("OMEGA-MG20 serial comman line tool. Version %d.%d%s (c) Sergey Butenin.\nUsing port=%s, src address=%d, destination=%d\n",(int) MAJOR,(int) MINOR,STATUS_SHORT,port,sr,ds);
 printf ("Please use commands:\nquit - to exit;\ndst=(0..255) - to set new destination address\nother - to send text message to OMEGA\n");
 while (1) {
 input = (char *)readline ("# ");
@@ -186,15 +189,14 @@ if( parse != NULL ) {
         printf ("New destination address=%i\n",ds);
     }
 } else if ( strlen (input) !=0 ) {
-l=CreateTextMessage ( sr, ds, input, send);
+l=CreateTextMessage (sr, ds, input, send);
 pthread_mutex_lock (&ser_mutex); // организуем блокировку на время чтения
 write(fd,send,l);
 pthread_mutex_unlock (&ser_mutex);
 }
-free (input);
+free(input);
 }
-free (input);
-free (buffer);
+//free (buffer);
 return 0;
 }
 
