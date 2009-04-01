@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1238525711 source:/home/bas/omega/main.c
+1238612266 source:/home/bas/omega/main.c
 	<fcntl.h>
 	<termios.h>
 	<stdlib.h>
