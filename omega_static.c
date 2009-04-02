@@ -5,7 +5,8 @@
 #include <string.h>
 #include <pthread.h>
 
-// TODO (bas#1#): Сделать TCP сервер/* TODO (bas#1#): Добавить возможность указания параметров: \
+// TODO (bas#1#): Сделать TCP сервер
+/* TODO (bas#1#): Добавить возможность указания параметров: \
 1. Последовательный порт\
 2. Файл лога\
 3. Файл управления (ctl file)\
@@ -14,7 +15,8 @@
 */
 /* Change to the baud rate of the port B2400, B9600, B19200, etc */
 /* TODO (bas#1#): Сделать динамическое выделение памяти + почистить от передачи указателей (mem + free) */
-/* TODO (bas#1#): Избавиться от предупреждений */
+/* TODO (bas#1#): Избавиться от предупреждений */
+
 #define SPEED B115200
 
 /* Change to the serial port you want to use /dev/ttyUSB0, /dev/ttyS0, etc. */
@@ -112,6 +114,8 @@ return offset+len+9;
 void * ReadSerial (void *parm) {
 unsigned char reply[256];
 unsigned char* rcv;
+
+
 unsigned char s;
 unsigned char d;
 unsigned short r=0;
@@ -172,6 +176,8 @@ tcsetattr(fd, TCSANOW, &options);
 pthread_create(&thread_read,NULL, &ReadSerial, &fd);
 printf ("Please enter commands for OMEGA-MG20 \(type \`quit\` to exit\)\n");
 while (1) {
+
+
 input = readline ("# ");
 if ( strcmp (input,"quit") ==0 ) break;
 if ( strlen (input) !=0 ) {
