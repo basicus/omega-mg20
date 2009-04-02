@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1238560020 source:/home/bas/omega/main.c
+1238697330 source:/home/bas/omega/main.c
 	<fcntl.h>
 	<termios.h>
 	<stdlib.h>
@@ -8,5 +8,5 @@
 	<pthread.h>
 	"version.h"
 
-1237895420 /home/bas/omega/version.h
+1238440745 /home/bas/omega/version.h
 

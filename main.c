@@ -12,7 +12,7 @@
 
 #define PORT "/dev/ttyS0"
 #define C_DST "dst="
-#define BUF_SIZE 1024
+#define BUF_SIZE 512
 
 
 
@@ -132,9 +132,9 @@ while( 1 ) {
 
 	if ( r1 > 0 ) {
 	  r = r +r1;
-	  printf ("Readed some info %d:%d\n",r1,r);
-	  for(i=0; i<r1; i++) printf("%02x",(unsigned char)buffer[i]);
-	  printf ("\n");
+	  //printf ("Readed some info %d:%d\n",r1,r);
+	  //for(i=0; i<r1; i++) printf("%02x",(unsigned char)buffer[i]);
+	  //printf ("\n");
 	  while ( ParseBufferMessage(&s,&d,reply,buffer,r,&n)==0 ) { // корректно декодированное сообщение
 	    r = r - n;
 	    //printf ("New r=%d, n=%d, src=%d; dst=%d\n",r,n,s,d);
@@ -211,7 +211,7 @@ pthread_mutex_unlock (&ser_mutex);
 }
 free(input);
 }
-free (input);
+//free (input);
 return 0;
 }
 
