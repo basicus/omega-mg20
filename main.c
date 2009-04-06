@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <iconv.h>
+#include <errno.h>
 #include "version.h"
 
 #define SPEED B115200
@@ -19,9 +21,9 @@
 //char *buffer;
 
 unsigned char buf[BUF_SIZE];
-unsigned char *buffer=&buf;
+unsigned char *buffer=(unsigned char*)&buf;
 const unsigned char h[]={0x02, 0x4d, 0x6c, 0x02};
-unsigned char *hdr=&h;
+unsigned char *hdr=(unsigned char*) &h;
 pthread_mutex_t ser_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 unsigned short SUM_CRC (unsigned char *Address, unsigned char Lenght)
@@ -40,7 +42,7 @@ int CreateTextMessage ( unsigned char src, unsigned char dst, char* message,char
 {
 unsigned char len=strlen(message)+1;
 unsigned short crc;
-unsigned short l,n;
+unsigned short l;
 char *send=malloc(len+1);
 send[0]=0x20;
 memcpy(send+1,message,len+1);
@@ -113,7 +115,9 @@ return 0;
 
 
 void * ReadSerial (void *parm) {
-char *reply=malloc(BUF_SIZE);
+char *reply=(char *) malloc(BUF_SIZE); // для принятого сообщения
+size_t sreply,sconv=2*BUF_SIZE,nconv;
+char *conv=(char *)  malloc(2*BUF_SIZE); // для перекодированного сообщения
 unsigned char* rcv;
 //char *buffer=malloc(2*BUF_SIZE);
 
@@ -122,7 +126,19 @@ unsigned char d;
 unsigned short r=0;
 int fd=*(int *)parm;
 int r1;
-unsigned short n,i;
+int n,i;
+iconv_t win2utf;
+
+win2utf = iconv_open ("WCHAR_T", "CP1251"); // осуществляем перекодировку из CP1251 в кодировку локали (UTF-8)
+
+if (win2utf == (iconv_t) -1)
+         { /* Что-то не так  */
+           if (errno == EINVAL)
+              printf ("Can't converse from '%s' to wchar_t not available\n","CP1251");
+           else
+            perror ("iconv_open");
+            return -1; // М.б. надо выйти?
+         }
 
 
 while( 1 ) {
@@ -137,8 +153,16 @@ while( 1 ) {
 	  //printf ("\n");
 	  while ( ParseBufferMessage(&s,&d,reply,buffer,r,&n)==0 ) { // корректно декодированное сообщение
 	    r = r - n;
-	    //printf ("New r=%d, n=%d, src=%d; dst=%d\n",r,n,s,d);
-	    printf ("\nSRC=%d DST=%d>%s",s,d,reply);
+	    sreply=strlen(reply);
+	    // Кон
+	    nconv = iconv (win2utf, &reply, &sreply, &conv, &sconv);
+	    if ((nconv == (size_t) -1) & (errno == EINVAL))
+             {
+                /* TODO (bas#1#): Необходимо добавить обработку ошибок конвертации */                printf ("Error! Can't convert some input text\n");
+             }
+          free (reply);
+          reply=(char *) malloc(BUF_SIZE);
+	    printf ("SRC=%d DST=%d>%s\n",s,d,conv);
 	    if ( r >0 ) {memcpy(buffer, buffer+n, r);} // копируем оставшееся сообщение в начало
             else {memset(buffer,0x00,n);}
         //memset(buffer+r,0x00,n);
@@ -146,6 +170,7 @@ while( 1 ) {
 	  }
     }
 }
+iconv_close (win2utf);
 
 }
 
@@ -194,7 +219,7 @@ printf ("OMEGA-MG20 serial comman line tool. Version %d.%d%s (c) Sergey Butenin.
 printf ("Please use commands:\nquit - to exit;\ndst=(0..255) - to set new destination address\nother - to send text message to OMEGA\n");
 while (1) {
 parse = NULL;
-input = readline ("# ");
+input = (char *) readline ("# ");
 if ( strcmp (input,"quit") ==0 ) break;
 parse = strstr( input,"dst=");
 if( parse != NULL ) {
