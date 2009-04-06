@@ -115,10 +115,10 @@ return 0;
 
 
 void * ReadSerial (void *parm) {
-char *reply=(char *) malloc(BUF_SIZE); // для принятого сообщения
+char *reply=(char *) malloc(BUF_SIZE),*rreply; // для принятого сообщения
 size_t sreply,sconv=2*BUF_SIZE,nconv;
-char *conv=(char *)  malloc(2*BUF_SIZE); // для перекодированного сообщения
-unsigned char* rcv;
+char *conv=(char *)  malloc(2*BUF_SIZE),*rconv; // для перекодированного сообщения
+//unsigned char* rcv;
 //char *buffer=malloc(2*BUF_SIZE);
 
 unsigned char s;
@@ -126,10 +126,10 @@ unsigned char d;
 unsigned short r=0;
 int fd=*(int *)parm;
 int r1;
-int n,i;
+int n;
 iconv_t win2utf;
 
-win2utf = iconv_open ("WCHAR_T", "CP1251"); // осуществляем перекодировку из CP1251 в кодировку локали (UTF-8)
+win2utf = iconv_open ("UTF-8", "CP1251"); // осуществляем перекодировку из CP1251 в кодировку локали (UTF-8)
 
 if (win2utf == (iconv_t) -1)
          { /* Что-то не так  */
@@ -154,15 +154,18 @@ while( 1 ) {
 	  while ( ParseBufferMessage(&s,&d,reply,buffer,r,&n)==0 ) { // корректно декодированное сообщение
 	    r = r - n;
 	    sreply=strlen(reply);
+	    rreply=reply;
+	    rconv=conv;
+        sconv=2*BUF_SIZE;
 	    // Кон
-	    nconv = iconv (win2utf, &reply, &sreply, &conv, &sconv);
+
+	    nconv = iconv (win2utf, &rreply, &sreply, &rconv, &sconv);
 	    if ((nconv == (size_t) -1) & (errno == EINVAL))
              {
                 /* TODO (bas#1#): Необходимо добавить обработку ошибок конвертации */                printf ("Error! Can't convert some input text\n");
              }
-          free (reply);
-          reply=(char *) malloc(BUF_SIZE);
-	    printf ("SRC=%d DST=%d>%s\n",s,d,conv);
+        *rconv='\0';
+        printf ("SRC=%d DST=%d>%s\n",s,d,conv);
 	    if ( r >0 ) {memcpy(buffer, buffer+n, r);} // копируем оставшееся сообщение в начало
             else {memset(buffer,0x00,n);}
         //memset(buffer+r,0x00,n);
@@ -170,7 +173,7 @@ while( 1 ) {
 	  }
     }
 }
-iconv_close (win2utf);
+
 
 }
 
