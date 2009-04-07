@@ -180,8 +180,12 @@ while( 1 ) {
 int main (int argc, char *argv[])
 {
 pthread_t thread_read;
-char *input;
-char *send=malloc(BUF_SIZE);
+char *input, *input_b;
+char *send=malloc(2*BUF_SIZE);
+
+char *conv=(char *) malloc(BUF_SIZE),*sconv; // для переданного сообщения
+size_t lsend,lsend_b=2*BUF_SIZE,nconv;
+iconv_t utf2win;
 unsigned char sr=254;
 unsigned char ds=0x00;
 int l,ds_n;
@@ -216,6 +220,16 @@ options.c_cc[VMIN]     = 0;     /* read by char */
 tcflush(fd, TCIFLUSH);
 tcsetattr(fd, TCSANOW, &options);
 
+utf2win = iconv_open ("CP1251","UTF-8"); // осуществляем перекодировку из UTF-8 в кодировку Omega (CP1251)
+
+if (utf2win == (iconv_t) -1)
+         { /* Что-то не так  */
+           if (errno == EINVAL)
+              printf ("Can't converse from '%s' to CP1251 not available\n","UTF-8");
+              exit (1); // Ошибка
+           }
+
+
 
 pthread_create(&thread_read,NULL, &ReadSerial, &fd);
 printf ("OMEGA-MG20 serial comman line tool. Version %d.%d%s (c) Sergey Butenin.\nUsing port=%s, src address=%d, destination=%d\n",(int) MAJOR,(int) MINOR,STATUS_SHORT,port,sr,ds);
@@ -232,10 +246,24 @@ if( parse != NULL ) {
         printf ("New destination address=%i\n",ds);
     }
 } else if ( strlen (input) !=0 ) {
-l=CreateTextMessage (sr, ds, input, send);
-pthread_mutex_lock (&ser_mutex); // организуем блокировку на время чтения
-write(fd,send,l);
-pthread_mutex_unlock (&ser_mutex);
+        lsend=strlen(input);
+	    input_b=input;
+	    sconv=conv;
+        lsend_b=2*BUF_SIZE;
+	    // Кон
+
+	    nconv = iconv (utf2win, &input_b, &lsend, &sconv, &lsend_b);
+	    if ((nconv == (size_t) -1) & (errno == EINVAL))
+             {
+                /* TODO (bas#1#): Необходимо добавить обработку ошибок конвертации */
+                printf ("Error! Can't convert some input text\n");
+             }
+        *sconv='\0';
+
+        l=CreateTextMessage (sr, ds, sconv, send);
+        pthread_mutex_lock (&ser_mutex); // организуем блокировку на время чтения
+        write(fd,send,l);
+        pthread_mutex_unlock (&ser_mutex);
 }
 free(input);
 }
