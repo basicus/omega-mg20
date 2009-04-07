@@ -270,7 +270,7 @@ if( parse != NULL ) {
              }
         *sconv='\0';
 
-        l=CreateTextMessage (sr, ds, sconv, send);
+        l=CreateTextMessage (sr, ds, conv, send);
         pthread_mutex_lock (&ser_mutex); // организуем блокировку на время чтения
         write(fd,send,l);
         pthread_mutex_unlock (&ser_mutex);
