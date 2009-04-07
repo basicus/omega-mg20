@@ -7,6 +7,7 @@
 #include <iconv.h>
 #include <errno.h>
 #include "version.h"
+#include <time.h>
 
 #define SPEED B115200
 
@@ -128,6 +129,11 @@ int fd=*(int *)parm;
 int r1;
 int n;
 iconv_t win2utf;
+time_t rawtime;
+struct tm * timeinfo;
+char *ctime=(char *) malloc(128);
+
+
 
 win2utf = iconv_open ("UTF-8", "CP1251"); // осуществляем перекодировку из CP1251 в кодировку локали (UTF-8)
 
@@ -165,7 +171,11 @@ while( 1 ) {
                 /* TODO (bas#1#): Необходимо добавить обработку ошибок конвертации */                printf ("Error! Can't convert some input text\n");
              }
         *rconv='\0';
-        printf ("SRC=%d DST=%d>%s\n",s,d,conv);
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        strftime (ctime,128,"%d.%m.%Y %H:%M:%S",timeinfo);
+
+        printf ("%s <SRC=%d DST=%d>%s\n",ctime,s,d,conv);
 	    if ( r >0 ) {memcpy(buffer, buffer+n, r);} // копируем оставшееся сообщение в начало
             else {memset(buffer,0x00,n);}
         //memset(buffer+r,0x00,n);
