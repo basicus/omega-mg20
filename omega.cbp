@@ -32,7 +32,6 @@
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
 					<Add option="-O2" />
-					<Add option="-Wall" />
 					<Add option="-lpthread -lreadline" />
 				</Compiler>
 				<Linker>
@@ -47,6 +46,7 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="mg20func.h" />
 		<Unit filename="version.h">
 			<Option target="Release" />
 		</Unit>

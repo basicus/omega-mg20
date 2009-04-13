@@ -1,15 +1,18 @@
 # depslib dependency file v1.0
-1239120071 source:/home/bas/omega/main.c
+1239611256 source:/home/bas/omega/main.c
 	<fcntl.h>
 	<termios.h>
+	"version.h"
+	<time.h>
+	"mg20func.c"
+
+1237895420 /home/bas/omega/version.h
+
+1239611593 /home/bas/omega/mg20func.c
+	<pthread.h>
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
-	<pthread.h>
 	<iconv.h>
 	<errno.h>
-	"version.h"
-	<time.h>
-
-1238440745 /home/bas/omega/version.h
 
