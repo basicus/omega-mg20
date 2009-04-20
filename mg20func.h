@@ -9,6 +9,9 @@
 
 pthread_mutex_t ser_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+#define SERIAL 1
+#define NET 2
+
 
 const unsigned char mg20_h[]={0x02, 0x4d, 0x6c, 0x02};
 unsigned char *mg20_hdr=(unsigned char*) &mg20_h;
@@ -28,6 +31,7 @@ return WCRC;
 }
 
 
+/* Часть Serial */
 /* Функция для формирования текстового сообщения */
 int CreateTextMessage (unsigned char src, unsigned char dst, char* message,char* buffer)
 {
@@ -59,7 +63,6 @@ free (send);
 
 return l;
 }
-
 
 /* Парсинг текстового сообщения из буффера */
 int ParseBufferMessage ( unsigned char* src, unsigned char* dst,char *message,char *bfr, int l,int *n)
@@ -177,3 +180,88 @@ while( 1 ) {
 }
 }
 
+/* Часть Network */
+/* Функция для формирования текстового сообщения */
+int CreateTextMessageNet (unsigned short src, unsigned short dst, char* message,char* buffer)
+{
+unsigned char len=strlen(message)+1;
+unsigned short crc;
+unsigned short l;
+char *send=malloc(len+1);
+send[0]=0x20;
+memcpy(send+1,message,len+1);
+len = strlen(send)+1;
+memcpy(buffer+9,send,len+1);
+buffer[0]=0x02;
+buffer[1]=0x4D;
+buffer[2]=0x6C;
+buffer[3]=0x02;
+buffer[4]=dst;
+buffer[6]=src;
+buffer[8]=len;
+
+crc=SUM_CRC(buffer+4,len+5);
+memcpy(buffer+len+9,&crc,2);
+l=len+11;
+#if DEBUG
+    int n;
+    for(n=0; n<l; n++) printf("%02x",(unsigned char)buffer[n]);
+    printf ("\n");
+#endif
+free (send);
+
+return l;
+}
+
+/* Парсинг текстового сообщения из буффера Network */
+int ParseBufferMessageNet ( unsigned short* src, unsigned short* dst,char *message,char *bfr, int l,int *n)
+{
+int offset; // найденное смещение от начала буффера
+unsigned short len; // найденная длина текстового сообщения
+unsigned short crc,crc2; // контрольная сумма
+unsigned char flag=0;
+
+char* msg; // указатель на предполагаемое начало сообщения
+// Поиск заголовка в буффере
+msg = (char*) memchr(bfr, *mg20_hdr,l);
+while ( msg != NULL ) {
+if ( memcmp(mg20_hdr,msg,4)!=0 ) { // не нашли заголовок в буффере
+			    offset=&msg[0]-&bfr[0]; // находим смещение и ищем следующее вхождение
+			    //printf ("Offset1 =%d, A1= %p; A2=%p\n",offset,msg,bfr);
+			    msg = (char*) memchr(bfr+offset+1, *mg20_hdr,l-offset-1);
+			    }
+    else { flag=1;  break;}
+}
+
+if ( flag==0 ) return 1; // заголовок в буффере не найден
+
+offset=&msg[0]-&bfr[0];
+if (offset<l) {
+    #if DEBUG
+        printf ("Offset2 = %d,A1= %p; A2=%p\n",offset,msg,bfr);
+    #endif
+
+    /* Проверка CRC */
+    *src= msg[6];
+    *dst= msg[4];
+    len= msg[8];
+    if ( (offset+len+11)<=l ) {
+        memcpy(&crc,msg+9+len,2);
+        crc2=SUM_CRC(msg+4,len+5);
+        if ( crc != crc2 ) { return 2; }
+        memcpy(message,msg+9,len+1);
+        #if DEBUG
+            printf ("SRC=%d,DST=%d, MSG=%s\n",*src,*dst, message);
+        #endif
+    } else { return 1;}
+    }
+else { return 1; }
+
+*n = offset+len+11;
+return 0;
+/* Коды ошибок:
+0 - все в порядке, в буффере найдено сообщение на указанном отрезке буффера
+1 - в указанном отрезке не найдено заголовка, сообщение получено не полностью
+2 - в указанном отрезке найден заголовок, но не верная контрольная сумма (вероятнее всего сообщение получено не до конца)
+*/
+}

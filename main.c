@@ -2,16 +2,19 @@
 
 #include <fcntl.h>
 #include <termios.h>
+#include <signal.h>
 #include "version.h"
 #include <time.h>
 #include "mg20func.h"
 
-#define DEBUG 1
-#define SERIAL 1
+//#define DEBUG 0
 #define SPEED B115200
 #define PORT "/dev/ttyS0"
 #define C_DST "dst="
-#define NET 2
+
+void sig_exit(); /* Функция для обработки сигнала  ВЫХОД и прерывание */
+void sig_hup(); /* Функция обработки сигнала HUP */
+
 
 int main (int argc, char *argv[])
 {
@@ -67,6 +70,15 @@ if (utf2win == (iconv_t) -1)
 
 
 
+/* Определяем обработчики сигналов */
+signal(SIGQUIT, &sig_exit);
+signal(SIGINT, &sig_exit);
+signal(SIGSEGV, &sig_exit);
+signal(SIGTERM, &sig_exit);
+signal(SIGABRT, &sig_exit);
+signal(SIGHUP, &sig_hup);
+
+/* Создаем поток для процесса опроса последовательного интерфейса */
 pthread_create(&thread_read,NULL, &OmegaReadSerial, &fd);
 printf ("OMEGA-MG20 serial comman line tool. Version %d.%d%s (c) Sergey Butenin.\nUsing port=%s, src address=%d, destination=%d\n",(int) MAJOR,(int) MINOR,STATUS_SHORT,port,sr,ds);
 printf ("Please use commands:\nquit - to exit;\ndst=(0..255) - to set new destination address\nother - to send text message to OMEGA\n");
@@ -106,3 +118,17 @@ free(input);
 return 0;
 }
 
+
+void sig_hup()
+{
+    signal(SIGHUP,&sig_hup); /* сборс сигнала */
+    printf("Received HUP signal.\n");
+
+}
+
+
+void sig_exit()
+{
+    printf("\nExiting...\n");
+    exit(0);
+}

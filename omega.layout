@@ -2,10 +2,10 @@
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
 	<File name="main.c" open="1" top="0" tabpos="1">
-		<Cursor position="198" topLine="21" />
+		<Cursor position="2286" topLine="63" />
 	</File>
 	<File name="mg20func.h" open="1" top="1" tabpos="2">
-		<Cursor position="1062" topLine="0" />
+		<Cursor position="1118" topLine="42" />
 	</File>
 	<File name="version.h" open="0" top="0" tabpos="1">
 		<Cursor position="293" topLine="0" />
