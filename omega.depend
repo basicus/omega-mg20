@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1240230420 source:/home/bas/omega/main.c
+1240231386 source:/home/bas/omega/main.c
 	<fcntl.h>
 	<termios.h>
 	<signal.h>
@@ -17,7 +17,7 @@
 	<iconv.h>
 	<errno.h>
 
-1240230500 /home/bas/omega/mg20func.h
+1240230591 /home/bas/omega/mg20func.h
 	<pthread.h>
 	<stdlib.h>
 	<stdio.h>

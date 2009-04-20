@@ -19,6 +19,9 @@ void sig_hup(); /* Функция обработки сигнала HUP */
 int main (int argc, char *argv[])
 {
 pthread_t thread_read;
+pthread_attr_t attr;
+size_t stacksize=65536;
+
 char *input, *input_b;
 char *send=malloc(2*BUF_SIZE);
 
@@ -79,7 +82,11 @@ signal(SIGABRT, &sig_exit);
 signal(SIGHUP, &sig_hup);
 
 /* Создаем поток для процесса опроса последовательного интерфейса */
-pthread_create(&thread_read,NULL, &OmegaReadSerial, &fd);
+pthread_attr_init(&attr);
+pthread_attr_setstacksize (&attr, stacksize);
+pthread_create(&thread_read,&attr, &OmegaReadSerial, &fd);
+
+
 printf ("OMEGA-MG20 serial comman line tool. Version %d.%d%s (c) Sergey Butenin.\nUsing port=%s, src address=%d, destination=%d\n",(int) MAJOR,(int) MINOR,STATUS_SHORT,port,sr,ds);
 printf ("Please use commands:\nquit - to exit;\ndst=(0..255) - to set new destination address\nother - to send text message to OMEGA\n");
 
@@ -116,7 +123,7 @@ if( parse != NULL ) {
 }
 free(input);
 }
-return 0;
+exit (0);
 }
 
 
