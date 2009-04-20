@@ -82,6 +82,7 @@ signal(SIGHUP, &sig_hup);
 pthread_create(&thread_read,NULL, &OmegaReadSerial, &fd);
 printf ("OMEGA-MG20 serial comman line tool. Version %d.%d%s (c) Sergey Butenin.\nUsing port=%s, src address=%d, destination=%d\n",(int) MAJOR,(int) MINOR,STATUS_SHORT,port,sr,ds);
 printf ("Please use commands:\nquit - to exit;\ndst=(0..255) - to set new destination address\nother - to send text message to OMEGA\n");
+
 while (1) {
 parse = NULL;
 input = (char *) readline ("# ");

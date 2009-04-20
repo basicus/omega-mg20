@@ -141,7 +141,7 @@ if (win2utf == (iconv_t) -1)
          { printf ("Can't converse from '%s' to wchar_t not available\n","CP1251"); }
 
 /* бесконечный цикл */
-while( 1 ) {
+while( usleep(100) ) {
 	pthread_mutex_lock (&ser_mutex); // организуем блокировку на время чтения
 	r1 =  read( fd, buffer+r, 256 );
 	pthread_mutex_unlock (&ser_mutex);
