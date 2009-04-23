@@ -17,7 +17,7 @@ void * serverthread(void * parm);       /* thread function prototype    */
 pthread_mutex_t  mut;
 
 #define PROTOPORT         5193          /* default protocol port number */
-#define QLEN              6             /* size of request queue        */
+#define QLEN              20             /* size of request queue        */
 
 int visits =  0;                        /* counts client connections     */
 
@@ -108,12 +108,14 @@ main (int argc, char *argv[])
      fprintf( stderr, "Server up and running.\n");
      while (1) {
 
-         printf("SERVER: Waiting for contact ...\n");
+         printf("SERVER: Waiting for connect...\n");
          
          if (  (sd2=accept(sd, (struct sockaddr *)&cad, &alen)) < 0) {
 	                      fprintf(stderr, "accept failed\n");
                               exit (1);
 	 }
+	 printf("Client connected: %s\n", inet_ntoa(cad.sin_addr));
+	                               
 	 pthread_create(&tid, NULL, serverthread, (void *) sd2 );
      }
      close(sd);
