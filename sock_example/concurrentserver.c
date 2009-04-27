@@ -15,6 +15,8 @@
 void * serverthread(void * parm);       /* thread function prototype    */
 
 pthread_mutex_t  mut;
+pthread_attr_t attr;
+size_t stacksize=32768;
 
 #define PROTOPORT         5193          /* default protocol port number */
 #define QLEN              20             /* size of request queue        */
@@ -53,12 +55,16 @@ main (int argc, char *argv[])
      int      sd, sd2;             /* socket descriptors */
      int      port;                /* protocol port number */
      int      alen;                /* length of address */
+     int      th_r;		   /* Thread return */
      pthread_t  tid;             /* variable to hold thread ID */
 
      pthread_mutex_init(&mut, NULL);
      memset((char  *)&sad,0,sizeof(sad)); /* clear sockaddr structure   */
      sad.sin_family = AF_INET;            /* set family to Internet     */
      sad.sin_addr.s_addr = INADDR_ANY;    /* set the local IP address */
+
+     pthread_attr_init(&attr);
+     pthread_attr_setstacksize (&attr, stacksize);
 
      /* Check  command-line argument for protocol port and extract      */
      /* port number if one is specfied.  Otherwise, use the default     */
@@ -116,7 +122,11 @@ main (int argc, char *argv[])
 	 }
 	 printf("Client connected: %s\n", inet_ntoa(cad.sin_addr));
 	                               
-	 pthread_create(&tid, NULL, serverthread, (void *) sd2 );
+	 th_r = pthread_create(&tid, &attr, serverthread, (void *) sd2 );
+	 if ( th_r != 0 ) { 
+	  printf ("The system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process PTHREAD_THREADS_MAX would be exceeded.\n");
+	 }
+
      }
      close(sd);
 }
