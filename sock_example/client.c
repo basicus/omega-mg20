@@ -14,7 +14,7 @@
 #include <string.h>
 
 #define closesocket      close
-#define PROTOPORT        5193        /* default protocol port number */
+#define PROTOPORT        7701        /* default protocol port number */
 
 extern int               errno;
 char   localhost[] = "localhost";    /* default host name            */

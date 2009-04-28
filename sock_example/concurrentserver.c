@@ -17,6 +17,7 @@
 #define NETWORK      "default"     /* default NETWORK name         */
 #define PASSWORD     "cern"        /* password for default NETWORK */
 #define MAX_THREADS  1000          /* maximum concurent threads    */
+#define TIMEWAIT     30            /* TIME_WAIT interval           */
 
 struct Omega {
     struct sockaddr_in ds;                /* destination address          */
@@ -86,6 +87,26 @@ main (int argc, char *argv[])
                        exit(1);
      }
 
+     /* set sockopt for reuse PORT */
+    #ifdef SO_REUSEPORT
+     int yes=1;
+     if (setsockopt(sd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)) == -1) {
+        fprintf("setsockopt(SO_REUSEPORT) error\n");
+        close(sd);
+	exit(1);
+    }
+   #endif 
+
+    #ifdef SO_LINGER
+    struct linger l = { 1, TIMEWAIT };
+    if (setsockopt(sd, SOL_SOCKET, SO_LINGER, &l, sizeof(struct linger)) == -1) {
+        //fprintf("setsockopt(S0_LINGER) error\n");
+	close (sd);
+	exit(1);
+	}
+    #endif
+	
+
      /* Bind a local address to the socket */
      if (bind(sd, (struct sockaddr *)&sad, sizeof (sad)) < 0) {
                         fprintf(stderr,"bind failed\n");
@@ -102,19 +123,30 @@ main (int argc, char *argv[])
 
      /* Main server loop - accept and handle requests */
      fprintf( stderr, "Server up and running.\n");
-     ci = 0; /* init current empty index */
+
      while (1) {
-    	 
+    	 ci = -1; /* init current empty index */
 	 /* select first empty thread id */
-         printf("SERVER: Waiting for connect...\n");
+	 while (ci<0)
+	    {
+		ci=s_empty(); 
+		if ( ci <0 ) { printf ("There is no enough resources to accept new threads"); sleep (10);}
+	    }
+         printf("SERVER: Waiting for connect to thread %d...\n",ci);
          
          if (  (OmegaThread[ci].sd=accept(sd, (struct sockaddr *)&OmegaThread[ci].ds, &alen)) < 0) {
 	                      fprintf(stderr, "accept failed\n");
                               exit (1);
 	 }
-	 printf("Client connected: %s\n", inet_ntoa(OmegaThread[ci].ds.sin_addr));
+
+	/* locking thread to that connection */
+        pthread_mutex_lock(&mut);
+           OmegaThread[ci].st=1;
+        pthread_mutex_unlock(&mut);
+	 
+	 printf("Client connected [%s]\n", inet_ntoa(OmegaThread[ci].ds.sin_addr));
 	                               
-	 th_r = pthread_create(&OmegaThread[ci].td, &attr, serverthread, (void *) OmegaThread[ci].sd );
+	 th_r = pthread_create(&OmegaThread[ci].td, &attr, serverthread, (void *) ci );
 	 if ( th_r != 0 ) { 
 	  printf ("The system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process PTHREAD_THREADS_MAX would be exceeded.\n");
 	 }
@@ -123,23 +155,41 @@ main (int argc, char *argv[])
      close(sd);
 }
 
+/* search first empty element of array */
+int s_empty()
+{
+ int z;
+ for(z=0; z < MAX_THREADS; z++)
+    { 
+    if ( OmegaThread[z].st==0 )
+    	    {return z;}
+     }
+ return -1;
+}
 
 void * serverthread(void * parm)
 {
-   int tsd, tvisits;
+   int tsd, tvisits, c;
    char     buf[100];           /* buffer for string the server sends */
 
-   tsd = (int) parm;
+   c = (int) parm;
+   tsd = OmegaThread[c].sd;
 
    pthread_mutex_lock(&mut);
-        tvisits = ++visits;
+       tvisits = ++visits;
    pthread_mutex_unlock(&mut);
 
-   sprintf(buf,"This server has been contacted %d time%s\n",
-	   tvisits, tvisits==1?".":"s.");
+   sprintf(buf,"This server has been contacted %d time%s\n",tvisits, tvisits==1?".":"s.");
 
-   printf("SERVER thread: %s", buf);
+   printf("SERVER thread[%d]: %s", c,buf);
    send(tsd,buf,strlen(buf),0);
+
+   sleep (2);   
    close(tsd);
+
+   pthread_mutex_lock(&mut);
+       OmegaThread[c].st=0;
+   pthread_mutex_unlock(&mut);
+
    pthread_exit(0);
 }    
