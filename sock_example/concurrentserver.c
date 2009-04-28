@@ -1,80 +1,69 @@
-/* to compile me in Linux, type:   gcc -o concurrentserver concurrentserver.c -lpthread */
-
-/* server.c - code for example server program that uses TCP */
-/* From Computer Networks and Internets by Douglas F. Comer */
-
+/* compile: gcc -o omega_server omega_server.c -lpthread 
+ Omega MG20 TCP server (daemon)  
+ Syntax:         omega_server [port] [NETWORK] [PASSWORD]
+ Note:           The port, network and password argument is optional.
+ (c) Sergey Butenin, 2009
+*/
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
 
-void * serverthread(void * parm);       /* thread function prototype    */
+#define PORT         7701          /* default protocol port number */
+#define QUEUE        20            /* size of request queue        */
+#define NETWORK      "default"     /* default NETWORK name         */
+#define PASSWORD     "cern"        /* password for default NETWORK */
+#define MAX_THREADS  1000          /* maximum concurent threads    */
 
-pthread_mutex_t  mut;
-pthread_attr_t attr;
-size_t stacksize=32768;
+struct Omega {
+    struct sockaddr_in ds;                /* destination address          */
+    pthread_t   td;                /* thread id                    */
+    int         sd;                /* socket descriptor            */
+    int         st;                /* status of connection         */
+    int	        ad;                /* address of peer              */
+};
 
-#define PROTOPORT         5193          /* default protocol port number */
-#define QLEN              20             /* size of request queue        */
+void * serverthread(void * parm);  /* thread function              */
+pthread_mutex_t  mut;              /* MUTEX for access to DATABASE */
+pthread_attr_t attr;               /* attibute var for all threads */
+size_t stacksize=32768;		   /* amount memory for thread     */
+struct Omega OmegaThread[MAX_THREADS]; /* structure for new threads */
 
-int visits =  0;                        /* counts client connections     */
-
-/*************************************************************************
- Program:        concurrent server
-
- Purpose:        allocate a socket and then repeatedly execute the folllowing:
-                          (1) wait for the next connection from a client
-                          (2) create a thread to handle the connection
-                          (3) go back to step (1)
-
-                 The server thread will
-                          (1) update a global variable in a mutex
-                          (2) send a short message to the client
-                          (3) close the connection
-
- Syntax:         server [ port ]
-
-                            port  - protocol port number to use
-
- Note:           The port argument is optional. If no port is specified,
-                        the server uses the default given by PROTOPORT.
-
-**************************************************************************
-*/
+int visits =  0;                   /* counter of client connections*/
 
 main (int argc, char *argv[])
 {
      struct   hostent   *ptrh;     /* pointer to a host table entry */
      struct   protoent  *ptrp;     /* pointer to a protocol table entry */
      struct   sockaddr_in sad;     /* structure to hold server's address */
-     struct   sockaddr_in cad;     /* structure to hold client's address */
-     int      sd, sd2;             /* socket descriptors */
+//     struct   sockaddr_in cad;     /* structure to hold client's address */
+     int      sd;                  /* socket descriptors */
      int      port;                /* protocol port number */
      int      alen;                /* length of address */
      int      th_r;		   /* Thread return */
-     pthread_t  tid;             /* variable to hold thread ID */
+     int      ci;		   /* current empty index */
+//     pthread_t  tid;             /* variable to hold thread ID */
 
      pthread_mutex_init(&mut, NULL);
+     pthread_attr_init(&attr);            /* init thread variables */
+     pthread_attr_setstacksize (&attr, stacksize); 
+
+
      memset((char  *)&sad,0,sizeof(sad)); /* clear sockaddr structure   */
      sad.sin_family = AF_INET;            /* set family to Internet     */
-     sad.sin_addr.s_addr = INADDR_ANY;    /* set the local IP address */
-
-     pthread_attr_init(&attr);
-     pthread_attr_setstacksize (&attr, stacksize);
+     sad.sin_addr.s_addr = INADDR_ANY;    /* set the local IP address   */
 
      /* Check  command-line argument for protocol port and extract      */
-     /* port number if one is specfied.  Otherwise, use the default     */
-     /* port value given by constant PROTOPORT                          */
     
      if (argc > 1) {                        /* if argument specified     */
                      port = atoi (argv[1]); /* convert argument to binary*/
      } else {
-                      port = PROTOPORT;     /* use default port number   */
+                      port = PORT;     /* use default port number   */
      }
+     
      if (port > 0)                          /* test for illegal value    */
                       sad.sin_port = htons((u_short)port);
      else {                                /* print error message and exit */
@@ -103,26 +92,28 @@ main (int argc, char *argv[])
      }
 
      /* Specify a size of request queue */
-     if (listen(sd, QLEN) < 0) {
+     if (listen(sd, QUEUE) < 0) {
                         fprintf(stderr,"listen failed\n");
                          exit(1);
      }
 
-     alen = sizeof(cad);
+     alen = sizeof(sad);
 
      /* Main server loop - accept and handle requests */
      fprintf( stderr, "Server up and running.\n");
+     ci = 0; /* init current empty index */
      while (1) {
-
+    	 
+	 /* select first empty thread id */
          printf("SERVER: Waiting for connect...\n");
          
-         if (  (sd2=accept(sd, (struct sockaddr *)&cad, &alen)) < 0) {
+         if (  (OmegaThread[ci].sd=accept(sd, (struct sockaddr *)&OmegaThread[ci].ds, &alen)) < 0) {
 	                      fprintf(stderr, "accept failed\n");
                               exit (1);
 	 }
-	 printf("Client connected: %s\n", inet_ntoa(cad.sin_addr));
+	 printf("Client connected: %s\n", inet_ntoa(OmegaThread[ci].ds.sin_addr));
 	                               
-	 th_r = pthread_create(&tid, &attr, serverthread, (void *) sd2 );
+	 th_r = pthread_create(&OmegaThread[ci].td, &attr, serverthread, (void *) OmegaThread[ci].sd );
 	 if ( th_r != 0 ) { 
 	  printf ("The system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process PTHREAD_THREADS_MAX would be exceeded.\n");
 	 }
