@@ -100,7 +100,7 @@ main (int argc, char *argv[])
     #ifdef SO_LINGER
     struct linger l = { 1, TIMEWAIT };
     if (setsockopt(sd, SOL_SOCKET, SO_LINGER, &l, sizeof(struct linger)) == -1) {
-        //fprintf("setsockopt(S0_LINGER) error\n");
+        //fprintf("setsockopt(SO_LINGER) error\n");
 	close (sd);
 	exit(1);
 	}
