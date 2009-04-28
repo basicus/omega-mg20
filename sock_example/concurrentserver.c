@@ -1,6 +1,6 @@
 /* compile: gcc -o omega_server omega_server.c -lpthread 
  Omega MG20 TCP server (daemon)  
- Syntax:         omega_server [port] [NETWORK] [PASSWORD]
+ Syntax:         omega_server [port] [ {NETWORK PASSWORD } ]
  Note:           The port, network and password argument is optional.
  (c) Sergey Butenin, 2009
 */
@@ -23,7 +23,8 @@ struct Omega {
     pthread_t   td;                /* thread id                    */
     int         sd;                /* socket descriptor            */
     int         st;                /* status of connection         */
-    int	        ad;                /* address of peer              */
+    int	        ad;                /* Omega address                */
+    int	        nw;		   /* Network id                   */
 };
 
 void * serverthread(void * parm);  /* thread function              */
