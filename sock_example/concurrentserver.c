@@ -18,6 +18,7 @@
 #define PASSWORD     "cern"        /* password for default NETWORK */
 #define MAX_THREADS  1000          /* maximum concurent threads    */
 #define TIMEWAIT     30            /* TIME_WAIT interval           */
+#define TIMEOUT      40           /* timeout for receive msg      */
 
 struct Omega {
     struct sockaddr_in ds;                /* destination address          */
@@ -41,17 +42,19 @@ main (int argc, char *argv[])
      struct   hostent   *ptrh;     /* pointer to a host table entry */
      struct   protoent  *ptrp;     /* pointer to a protocol table entry */
      struct   sockaddr_in sad;     /* structure to hold server's address */
-//     struct   sockaddr_in cad;     /* structure to hold client's address */
      int      sd;                  /* socket descriptors */
      int      port;                /* protocol port number */
      int      alen;                /* length of address */
      int      th_r;		   /* Thread return */
      int      ci;		   /* current empty index */
-//     pthread_t  tid;             /* variable to hold thread ID */
+     struct   timeval tv;          /* TIMEOUT for receive data from peer */
+     
 
      pthread_mutex_init(&mut, NULL);
      pthread_attr_init(&attr);            /* init thread variables */
      pthread_attr_setstacksize (&attr, stacksize); 
+     tv.tv_sec = TIMEOUT;
+     tv.tv_usec = 0 ;
 
 
      memset((char  *)&sad,0,sizeof(sad)); /* clear sockaddr structure   */
@@ -139,17 +142,19 @@ main (int argc, char *argv[])
                               exit (1);
 	 }
 
-	/* locking thread to that connection */
+	if ( setsockopt (OmegaThread[ci].sd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof tv)) printf("setsockopt error (SO_RCVTIMEO)\n");
+
+	/* locking thread to that connection and setting than he is busy */
         pthread_mutex_lock(&mut);
            OmegaThread[ci].st=1;
         pthread_mutex_unlock(&mut);
-	 
-	 printf("Client connected [%s]\n", inet_ntoa(OmegaThread[ci].ds.sin_addr));
+        
+	printf("Client connection from %s\n", inet_ntoa(OmegaThread[ci].ds.sin_addr));
 	                               
-	 th_r = pthread_create(&OmegaThread[ci].td, &attr, serverthread, (void *) ci );
-	 if ( th_r != 0 ) { 
+	th_r = pthread_create(&OmegaThread[ci].td, &attr, serverthread, (void *) ci );
+	if ( th_r != 0 ) { 
 	  printf ("The system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process PTHREAD_THREADS_MAX would be exceeded.\n");
-	 }
+	}
 
      }
      close(sd);
@@ -170,26 +175,30 @@ int s_empty()
 void * serverthread(void * parm)
 {
    int tsd, tvisits, c;
+   int cs=0;                    /* close status */
    char     buf[100];           /* buffer for string the server sends */
 
    c = (int) parm;
    tsd = OmegaThread[c].sd;
 
    pthread_mutex_lock(&mut);
-       tvisits = ++visits;
+       tvisits=++visits;
    pthread_mutex_unlock(&mut);
 
-   sprintf(buf,"This server has been contacted %d time%s\n",tvisits, tvisits==1?".":"s.");
+   printf("SERVER thread[%d] accepted connection number %d\n", c,tvisits);
+   /* code processing client messages */
+      
+   if (read(tsd,buf,100)<0) { printf ("ERROR reading from socket thread %d (TIMEOUT)\n",c); cs=1;}
+	else  printf("Here is the message: %s\n",buf);
 
-   printf("SERVER thread[%d]: %s", c,buf);
-   send(tsd,buf,strlen(buf),0);
-
-   sleep (2);   
+   sleep (10);
+   //send(tsd,buf,strlen(buf),0);
+   /* end of code processing */
+   printf("SERVER thread[%d] closing connection number %d with status %d\n", c,tvisits,cs);
    close(tsd);
-
    pthread_mutex_lock(&mut);
        OmegaThread[c].st=0;
    pthread_mutex_unlock(&mut);
 
    pthread_exit(0);
-}    
+}  
