@@ -4,13 +4,13 @@
  Note:           The port, network and password argument is optional.
  (c) Sergey Butenin, 2009
 */
+#define NET          2
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <string.h>
+#include <signal.h>
+#include "../mg20func.h"
 
 #define PORT         7701          /* default protocol port number */
 #define QUEUE        20            /* size of request queue        */
@@ -18,7 +18,11 @@
 #define PASSWORD     "cern"        /* password for default NETWORK */
 #define MAX_THREADS  1000          /* maximum concurent threads    */
 #define TIMEWAIT     30            /* TIME_WAIT interval           */
-#define TIMEOUT      40           /* timeout for receive msg      */
+#define TIMEOUT      40            /* timeout for receive msg      */
+#define BUF_SIZE     1024          /* size of receive buffer       */
+
+
+
 
 struct Omega {
     struct sockaddr_in ds;                /* destination address          */
@@ -30,16 +34,20 @@ struct Omega {
 };
 
 void * serverthread(void * parm);  /* thread function              */
+int s_empty();
+void sig_exit(); /* signal handler for exit */
+void sig_hup(); /* signal handler for HUP */
+
 pthread_mutex_t  mut;              /* MUTEX for access to DATABASE */
 pthread_attr_t attr;               /* attibute var for all threads */
 size_t stacksize=32768;		   /* amount memory for thread     */
 struct Omega OmegaThread[MAX_THREADS]; /* structure for new threads */
-
+char *nw=NETWORK;
+char *pw=PASSWORD;
 int visits =  0;                   /* counter of client connections*/
 
 main (int argc, char *argv[])
 {
-     struct   hostent   *ptrh;     /* pointer to a host table entry */
      struct   protoent  *ptrp;     /* pointer to a protocol table entry */
      struct   sockaddr_in sad;     /* structure to hold server's address */
      int      sd;                  /* socket descriptors */
@@ -56,6 +64,13 @@ main (int argc, char *argv[])
      tv.tv_sec = TIMEOUT;
      tv.tv_usec = 0 ;
 
+     /* signal handlers */
+     signal(SIGQUIT, &sig_exit);
+     signal(SIGINT, &sig_exit);
+     signal(SIGSEGV, &sig_exit);
+     signal(SIGTERM, &sig_exit);
+     signal(SIGABRT, &sig_exit);
+     signal(SIGHUP, &sig_hup);
 
      memset((char  *)&sad,0,sizeof(sad)); /* clear sockaddr structure   */
      sad.sin_family = AF_INET;            /* set family to Internet     */
@@ -126,6 +141,7 @@ main (int argc, char *argv[])
 
      /* Main server loop - accept and handle requests */
      fprintf( stderr, "Server up and running.\n");
+     NetPassword(1,0,nw,pw);
 
      while (1) {
     	 ci = -1; /* init current empty index */
@@ -172,33 +188,105 @@ int s_empty()
  return -1;
 }
 
+/* функция обработки соединений */
 void * serverthread(void * parm)
 {
    int tsd, tvisits, c;
    int cs=0;                    /* close status */
-   char     buf[100];           /* buffer for string the server sends */
+   char *reply=(char *) malloc(BUF_SIZE); /* receive buffer */
+   char *rreply;                         /* pointer to rcv buffer */
+   size_t sreply,sconv=2*BUF_SIZE,nconv; /* conversion from cp1251 to utf8 */
+   char *conv=(char *)  malloc(2*BUF_SIZE),*rconv; /* for conversion buffer */
+   unsigned char buf[BUF_SIZE];
+   unsigned char *buffer=(unsigned char*)&buf;
+   unsigned short s;  /* src address */
+   unsigned short d;  /* dst address */
+   unsigned short r=0; /* counter of received buffer */
+   int r1;          /* counter of current receive */
+   int n;           /* tail */
+   iconv_t win2utf;
 
    c = (int) parm;
    tsd = OmegaThread[c].sd;
+   win2utf = iconv_open ("UTF-8", "CP1251"); // осуществляем перекодировку из CP1251 в кодировку локали (UTF-8)
+   if (win2utf == (iconv_t) -1)
+         { printf ("Can't converse from '%s' to wchar_t not available\n","CP1251"); }
+
 
    pthread_mutex_lock(&mut);
        tvisits=++visits;
    pthread_mutex_unlock(&mut);
 
    printf("SERVER thread[%d] accepted connection number %d\n", c,tvisits);
-   /* code processing client messages */
+   /* code for processing client messages */
+   while (r<BUF_SIZE-256) {
+       r1 =  read( tsd, buffer+r, 256 );
+       if ( r1 > 0 ) { /* received some portion of data */
+	          r = r +r1;
+              #ifdef DEBUG
+	           int i;
+               printf ("Readed some info %d:%d\n",r1,r);
+               for(i=0; i<r1; i++) printf("%02x",(unsigned char)buffer[i]);
+               printf ("\n");
+	          #endif
+      /* decoding message */
+            while ( ParseBufferMessageNet(&s,&d,reply,buffer,r,&n)==0 ) { /* if message correct decoded */
+                r = r - n; /* determine tail undecoded message */
+                /* convert message from cp1251 to UTF8 */
+                sreply=strlen(reply);
+                rreply=reply;
+                rconv=conv;
+                sconv=2*BUF_SIZE;
 
-   if (read(tsd,buf,100)<0) { printf ("ERROR reading from socket thread %d (TIMEOUT)\n",c); cs=1;}
-	else  printf("Here is the message: %s\n",buf);
+                nconv = iconv (win2utf, &rreply, &sreply, &rconv, &sconv);
+                if ((nconv == (size_t) -1) & (errno == EINVAL)) { printf ("Error! Can't convert some input text\n"); }
+                *rconv='\0';
+                printf ("<SRC=%d DST=%d>%s\n",s,d,conv);
+                if ( OmegaThread[c].st==1 && NetAuth(nw,pw,conv) ==1) { /* check if client not auth */
+                        pthread_mutex_lock(&mut);
+                        OmegaThread[c].st=2;
+                        pthread_mutex_unlock(&mut);
+                } else {
+                 printf ("ERROR client auth thread %d\n",c);
+                 cs=3; /* setting status of closed socket */
+                 break; /* exiting from loop of receive message */
+                }
 
-   sleep (10);
-   //send(tsd,buf,strlen(buf),0);
+                /* ... SOME code for processing message ... */
+                if ( r >0 ) {memcpy(buffer, buffer+n, r);} /* copy message from the end to begin */
+                        else {memset(buffer,0x00,n);}
+            }
+        } else /* exit with timeout */
+        {
+            printf ("ERROR reading from socket thread %d (TIMEOUT)\n",c);
+            cs=1; /* setting status of closed socket */
+            break; /* exiting from loop of receive message */
+        }
+   }
+
+   if (r>BUF_SIZE-256) { cs=2; printf ("ERROR buffer overflow of thread %d. May be problem with connection?\n",c); }
+
    /* end of code processing */
    printf("SERVER thread[%d] closing connection number %d with status %d\n", c,tvisits,cs);
    close(tsd);
+
    pthread_mutex_lock(&mut);
        OmegaThread[c].st=0;
    pthread_mutex_unlock(&mut);
 
    pthread_exit(0);
+}
+
+void sig_hup()
+{
+    signal(SIGHUP,&sig_hup); /* сборс сигнала */
+    printf("Received HUP signal.\n");
+
+}
+
+
+void sig_exit()
+{
+    printf("\nExiting...\n");
+    exit(0);
 }

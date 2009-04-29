@@ -7,12 +7,6 @@
 
 
 
-pthread_mutex_t ser_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-#define SERIAL 1
-#define NET 2
-
-
 const unsigned char mg20_h[]={0x02, 0x4d, 0x6c, 0x02};
 unsigned char *mg20_hdr=(unsigned char*) &mg20_h;
 
@@ -30,7 +24,8 @@ for (N=1;N<=Lenght;N++,Address++)
 return WCRC;
 }
 
-
+#ifdef SERIAL
+pthread_mutex_t ser_mutex = PTHREAD_MUTEX_INITIALIZER;
 /* Часть Serial */
 /* Функция для формирования текстового сообщения */
 int CreateTextMessage (unsigned char src, unsigned char dst, char* message,char* buffer)
@@ -54,7 +49,7 @@ buffer[6]=len;
 crc=SUM_CRC(buffer+4,len+3);
 memcpy(buffer+len+7,&crc,2);
 l=len+9;
-#if DEBUG
+#ifdef DEBUG
     int n;
     for(n=0; n<l; n++) printf("%02x",(unsigned char)buffer[n]);
     printf ("\n");
@@ -88,7 +83,7 @@ if ( flag==0 ) return 1; // заголовок в буффере не найде
 
 offset=&msg[0]-&bfr[0];
 if (offset<l) {
-    #if DEBUG
+    #ifdef DEBUG
         printf ("Offset2 = %d,A1= %p; A2=%p\n",offset,msg,bfr);
     #endif
 
@@ -101,7 +96,7 @@ if (offset<l) {
         crc2=SUM_CRC(msg+4,len+3);
         if ( crc != crc2 ) { return 2; }
         memcpy(message,msg+7,len+1);
-        #if DEBUG
+        #ifdef DEBUG
             printf ("SRC=%d,DST=%d, MSG=%s\n",*src,*dst, message);
         #endif
     } else { return 1;}
@@ -148,7 +143,7 @@ while( 1 ) {
 
 	if ( r1 > 0 ) {
 	  r = r +r1;
-	  #if DEBUG
+	  #ifdef DEBUG
 	  int i;
         printf ("Readed some info %d:%d\n",r1,r);
         for(i=0; i<r1; i++) printf("%02x",(unsigned char)buffer[i]);
@@ -179,7 +174,9 @@ while( 1 ) {
     }
 }
 }
+#endif
 
+#ifdef NET
 /* Часть Network */
 /* Функция для формирования текстового сообщения */
 int CreateTextMessageNet (unsigned short src, unsigned short dst, char* message,char* buffer)
@@ -203,7 +200,7 @@ buffer[8]=len;
 crc=SUM_CRC(buffer+4,len+5);
 memcpy(buffer+len+9,&crc,2);
 l=len+11;
-#if DEBUG
+#ifdef DEBUG
     int n;
     for(n=0; n<l; n++) printf("%02x",(unsigned char)buffer[n]);
     printf ("\n");
@@ -237,7 +234,7 @@ if ( flag==0 ) return 1; // заголовок в буффере не найде
 
 offset=&msg[0]-&bfr[0];
 if (offset<l) {
-    #if DEBUG
+    #ifdef DEBUG
         printf ("Offset2 = %d,A1= %p; A2=%p\n",offset,msg,bfr);
     #endif
 
@@ -250,7 +247,7 @@ if (offset<l) {
         crc2=SUM_CRC(msg+4,len+5);
         if ( crc != crc2 ) { return 2; }
         memcpy(message,msg+9,len+1);
-        #if DEBUG
+        #ifdef DEBUG
             printf ("SRC=%d,DST=%d, MSG=%s\n",*src,*dst, message);
         #endif
     } else { return 1;}
@@ -265,3 +262,28 @@ return 0;
 2 - в указанном отрезке найден заголовок, но не верная контрольная сумма (вероятнее всего сообщение получено не до конца)
 */
 }
+
+void NetPassword (unsigned short src, unsigned short dst, char *net, char * pass) {
+    char buf[100];
+    char msg[100];
+    int n, r;
+    sprintf(msg,"%s %s",net,pass);
+
+    printf ("%s",msg);
+    r = CreateTextMessageNet(src,dst,msg,buf);
+    printf ("\n");
+    printf("Coded auth:");
+    for(n=0; n<r; n++) printf("%02x",(unsigned char)buf[n]);
+    ParseBufferMessageNet(&src,&dst,&msg,&buf,r,&n);
+    printf ("\n%s\n",msg);
+}
+
+int NetAuth (char *net, char * pass,char *auth) {
+    char msg[100];
+    int n, r;
+    sprintf(msg," %s-%s",net,pass);
+    if ( strcmp(msg,auth)==0 ) return 1; /* auth passed */
+        else return 0;
+}
+
+#endif

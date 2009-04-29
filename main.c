@@ -1,5 +1,5 @@
 #define BUF_SIZE 512
-
+#define SERIAL 1
 #include <fcntl.h>
 #include <termios.h>
 #include <signal.h>
