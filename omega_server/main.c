@@ -18,7 +18,7 @@
 #define PASSWORD     "cern"        /* password for default NETWORK */
 #define MAX_THREADS  1000          /* maximum concurent threads    */
 #define TIMEWAIT     30            /* TIME_WAIT interval           */
-#define TIMEOUT      40            /* timeout for receive msg      */
+#define TIMEOUT      240            /* timeout for receive msg      */
 #define BUF_SIZE     1024          /* size of receive buffer       */
 
 
@@ -44,6 +44,7 @@ size_t stacksize=32768;		   /* amount memory for thread     */
 struct Omega OmegaThread[MAX_THREADS]; /* structure for new threads */
 char *nw=NETWORK;
 char *pw=PASSWORD;
+unsigned short s_hub=65534;
 int visits =  0;                   /* counter of client connections*/
 
 main (int argc, char *argv[])
@@ -141,7 +142,7 @@ main (int argc, char *argv[])
 
      /* Main server loop - accept and handle requests */
      fprintf( stderr, "Server up and running.\n");
-     NetPassword(1,0,nw,pw);
+     //NetPassword(22200,0,nw,pw);
 
      while (1) {
     	 ci = -1; /* init current empty index */
@@ -202,8 +203,10 @@ void * serverthread(void * parm)
    unsigned short s;  /* src address */
    unsigned short d;  /* dst address */
    unsigned short r=0; /* counter of received buffer */
+   char *msg="Sm>P=1?"; /* test message */
    int r1;          /* counter of current receive */
    int n;           /* tail */
+   int l;
    iconv_t win2utf;
 
    c = (int) parm;
@@ -241,16 +244,24 @@ void * serverthread(void * parm)
                 nconv = iconv (win2utf, &rreply, &sreply, &rconv, &sconv);
                 if ((nconv == (size_t) -1) & (errno == EINVAL)) { printf ("Error! Can't convert some input text\n"); }
                 *rconv='\0';
-                printf ("<SRC=%d DST=%d>%s\n",s,d,conv);
-                if ( OmegaThread[c].st==1 && NetAuth(nw,pw,conv) ==1) { /* check if client not auth */
+                printf ("Received msg:<SRC=%d DST=%d>%s [%d:%d]\n",s,d,conv,c,OmegaThread[c].st);
+                if ( OmegaThread[c].st==1 && NetAuth(nw,pw,conv) ==1 ) { /* check if client not auth */
                         pthread_mutex_lock(&mut);
                         OmegaThread[c].st=2;
+                        OmegaThread[c].ad=s;
+                        OmegaThread[c].nw=1;
+                        printf ("Client auth successfull thread:%d. Address %d\n",c,s);
                         pthread_mutex_unlock(&mut);
-                } else {
+                        printf("Sending test msg \n");
+                        l=CreateTextMessageNet (&s_hub, &OmegaThread[c].ad, msg,reply);
+                        write(OmegaThread[c].sd,reply,l);
+
+                } else if (OmegaThread[c].st==1)  {
                  printf ("ERROR client auth thread %d\n",c);
                  cs=3; /* setting status of closed socket */
                  break; /* exiting from loop of receive message */
                 }
+
 
                 /* ... SOME code for processing message ... */
                 if ( r >0 ) {memcpy(buffer, buffer+n, r);} /* copy message from the end to begin */

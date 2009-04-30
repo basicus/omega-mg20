@@ -179,22 +179,26 @@ while( 1 ) {
 #ifdef NET
 /* Часть Network */
 /* Функция для формирования текстового сообщения */
-int CreateTextMessageNet (unsigned short src, unsigned short dst, char* message,char* buffer)
+int CreateTextMessageNet (unsigned short *src, unsigned short *dst, char* message,char* buffer)
 {
 unsigned char len=strlen(message)+1;
 unsigned short crc;
 unsigned short l;
+char *s,*d;
 char *send=malloc(len+1);
 send[0]=0x20;
 memcpy(send+1,message,len+1);
 len = strlen(send)+1;
 memcpy(buffer+9,send,len+1);
+s = src; d = dst;
 buffer[0]=0x02;
 buffer[1]=0x4D;
 buffer[2]=0x6C;
 buffer[3]=0x02;
-buffer[4]=dst;
-buffer[6]=src;
+buffer[4]=d[0];
+buffer[5]=d[1];
+buffer[6]=s[0];
+buffer[7]=s[1];
 buffer[8]=len;
 
 crc=SUM_CRC(buffer+4,len+5);
@@ -217,7 +221,7 @@ int offset; // найденное смещение от начала буффе�
 unsigned short len; // найденная длина текстового сообщения
 unsigned short crc,crc2; // контрольная сумма
 unsigned char flag=0;
-
+unsigned char *s,*d;
 char* msg; // указатель на предполагаемое начало сообщения
 // Поиск заголовка в буффере
 msg = (char*) memchr(bfr, *mg20_hdr,l);
@@ -239,8 +243,14 @@ if (offset<l) {
     #endif
 
     /* Проверка CRC */
-    *src= msg[6];
-    *dst= msg[4];
+    s=(unsigned char*)src;
+    d=(unsigned char*)dst;
+    s[0]=msg[6];
+    s[1]=msg[7];
+    d[0]=msg[4];
+    d[1]=msg[5];
+    //*src= msg[6]+msg[7]*256;
+    //*dst= (char) msg[4]+msg[5]*256;
     len= msg[8];
     if ( (offset+len+11)<=l ) {
         memcpy(&crc,msg+9+len,2);
@@ -270,7 +280,7 @@ void NetPassword (unsigned short src, unsigned short dst, char *net, char * pass
     sprintf(msg,"%s %s",net,pass);
 
     printf ("%s",msg);
-    r = CreateTextMessageNet(src,dst,msg,buf);
+    r = CreateTextMessageNet(&src,&dst,msg,buf);
     printf ("\n");
     printf("Coded auth:");
     for(n=0; n<r; n++) printf("%02x",(unsigned char)buf[n]);
@@ -282,6 +292,7 @@ int NetAuth (char *net, char * pass,char *auth) {
     char msg[100];
     int n, r;
     sprintf(msg," %s %s",net,pass);
+    //printf("Auth \"%s\" with \"%s\"\n",msg,auth);
     if ( strcmp(msg,auth)==0 ) return 1; /* auth passed */
         else return 0;
 }
