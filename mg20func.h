@@ -289,11 +289,9 @@ void NetPassword (unsigned short src, unsigned short dst, char *net, char * pass
 }
 
 int NetAuth (char *net, char * pass,char *auth) {
-    char msg[100];
-    int n, r;
-    sprintf(msg," %s %s",net,pass);
-    //printf("Auth \"%s\" with \"%s\"\n",msg,auth);
-    if ( strcmp(msg,auth)==0 ) return 1; /* auth passed */
+    char msg3[100];
+    sprintf(msg3," %s %s",net,pass);
+    if ( strcmp(msg3,auth)==0 ) return 1; /* auth passed */
         else return 0;
 }
 

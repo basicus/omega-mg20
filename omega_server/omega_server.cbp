@@ -11,7 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="9000" />
+				<Option parameters="-d -P dddd -p 7702 -n ddfss" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-l pthread" />
@@ -25,6 +25,7 @@
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="-d" />
 				<Compiler>
 					<Add option="-march=i586" />
 					<Add option="-fexpensive-optimizations" />
