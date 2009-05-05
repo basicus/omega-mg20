@@ -7,6 +7,8 @@
 #define NET          2
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <signal.h>
@@ -19,6 +21,8 @@
 #include "../mg20func.h"
 #define DAEMON_NAME "omega_server"
 #define PID_FILE "/var/run/omega_server.pid"
+#define CTL_SOCKET "/tmp/omega.ctl"
+#define QLEN_UNIX 10
 
 
 #define PORT         7701          /* default protocol port number */
@@ -30,7 +34,8 @@
 #define TIMEOUT      240            /* timeout for receive msg      */
 #define BUF_SIZE     1024          /* size of receive buffer       */
 
-
+//# TODO! Add support for conversion to windows 1251 (from UTF8)
+//# TODO! Add support for mutex, when accessing array of sockets;
 
 
 struct Omega {
@@ -47,6 +52,7 @@ int s_empty();
 void signal_handler(int sig);
 void PrintUsage(int argc, char *argv[]); /* Print usage */
 void print_msg (char *msg);
+int control_socket ();
 pthread_mutex_t  mut;              /* MUTEX for access to DATABASE */
 pthread_attr_t attr;               /* attibute var for all threads */
 size_t stacksize=32768;		   /* amount memory for thread     */
@@ -58,6 +64,7 @@ int visits =  0;                   /* counter of client connections*/
 int daemonize;                     /* if 1 then daemonize, else console */
 int port = PORT;     /* use default port number   */
 char *msg;
+char* socket_name = CTL_SOCKET; /* UNIX socket name */
 
 main (int argc, char *argv[])
 {
@@ -69,7 +76,8 @@ main (int argc, char *argv[])
      int      ci;		   /* current empty index */
      struct   timeval tv;          /* TIMEOUT for receive data from peer */
      pid_t pid, sid;
-
+     int      c_th;          /* Control thread */
+     pthread_t   c_td;
      msg = malloc(256);
      pthread_mutex_init(&mut, NULL);
      pthread_attr_init(&attr);            /* init thread variables */
@@ -124,6 +132,58 @@ main (int argc, char *argv[])
                 exit(0);
                 break;
         }
+    }
+
+
+    if (daemonize==1) {
+        syslog(LOG_INFO, "Starting the daemonizing process");
+
+        /* Fork off the parent process */
+        pid = fork();
+        if (pid < 0) {
+            exit(EXIT_FAILURE);
+        }
+        /* If we got a good PID, then
+           we can exit the parent process. */
+        if (pid > 0) {
+            exit(EXIT_SUCCESS);
+        }
+
+        /*
+        int fpid = open(PID_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0640);
+        if ( fpid < 0) { print_msg("Eror! Failed to create PID file");
+            exit(EXIT_FAILURE);
+            } else {
+            char pid[6];
+            sprintf (pid, sizeof(pid), "%d\n", getpid());
+            int rpid = write (fpid, pid, strlen(pid));
+            if (rpid < 0) {
+                print_msg ("Error! Cant write to PID file.");
+                exit(EXIT_FAILURE);
+                }
+            }
+        close (fpid);
+        */
+        /* Change the file mode mask */
+        umask(0);
+
+        /* Create a new SID for the child process */
+        sid = setsid();
+        if (sid < 0) {
+            /* Log the failure */
+            exit(EXIT_FAILURE);
+        }
+
+        /* Change the current working directory */
+        if ((chdir("/")) < 0) {
+            /* Log the failure */
+            exit(EXIT_FAILURE);
+        }
+
+        /* Close out the standard file descriptors */
+        close(STDIN_FILENO);
+        close(STDOUT_FILENO);
+        close(STDERR_FILENO);
     }
 
 
@@ -182,6 +242,11 @@ main (int argc, char *argv[])
 
      alen = sizeof(sad);
 
+    /* Create thread for contol socket */
+    th_r = pthread_create(&c_td, &attr, control_socket, NULL );
+
+    if ( th_r != 0 ) { print_msg("Error! Can't create thread for control socket! Continue without CTL."); }
+
      /* Main server loop - accept and handle requests */
      if ( daemonize ==1 ) { syslog(LOG_INFO, "%s daemon starting up", DAEMON_NAME);
                             setlogmask(LOG_UPTO(LOG_DEBUG));
@@ -190,59 +255,6 @@ main (int argc, char *argv[])
             else fprintf( stderr, "Omega server up and running.\n");
 
     /* Our process ID and Session ID */
-
-
-    if (daemonize==1) {
-        syslog(LOG_INFO, "Starting the daemonizing process");
-
-        /* Fork off the parent process */
-        pid = fork();
-        if (pid < 0) {
-            exit(EXIT_FAILURE);
-        }
-        /* If we got a good PID, then
-           we can exit the parent process. */
-        if (pid > 0) {
-            exit(EXIT_SUCCESS);
-        }
-
-        /*
-        int fpid = open(PID_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0640);
-        if ( fpid < 0) { print_msg("Eror! Failed to create PID file");
-            exit(EXIT_FAILURE);
-            } else {
-            char pid[6];
-            sprintf (pid, sizeof(pid), "%d\n", getpid());
-            int rpid = write (fpid, pid, strlen(pid));
-            if (rpid < 0) {
-                print_msg ("Error! Cant write to PID file.");
-                exit(EXIT_FAILURE);
-                }
-            }
-        close (fpid);
-        */
-        /* Change the file mode mask */
-        umask(0);
-
-        /* Create a new SID for the child process */
-        sid = setsid();
-        if (sid < 0) {
-            /* Log the failure */
-            exit(EXIT_FAILURE);
-        }
-
-        /* Change the current working directory */
-        if ((chdir("/")) < 0) {
-            /* Log the failure */
-            exit(EXIT_FAILURE);
-        }
-
-        /* Close out the standard file descriptors */
-        close(STDIN_FILENO);
-        close(STDOUT_FILENO);
-        close(STDERR_FILENO);
-    }
-
 
      while (1) {
     	 ci = -1; /* init current empty index */
@@ -413,30 +425,36 @@ void signal_handler(int sig) {
     switch(sig) {
         case SIGHUP:
             print_msg("Received SIGHUP signal.");
+            unlink(socket_name);
             //remove(PID_FILE);
             break;
         case SIGTERM:
             print_msg("Received SIGTERM signal.");
+            unlink(socket_name);
             //remove(PID_FILE);
             exit (0);
             break;
         case SIGQUIT:
             print_msg("Received SIGQUIT signal.");
+            unlink(socket_name);
             //remove(PID_FILE);
             exit (0);
             break;
         case SIGINT:
             print_msg("Received SIGINT signal.");
+            unlink(socket_name);
             //remove(PID_FILE);
             exit (0);
             break;
         case SIGABRT:
             print_msg("Received SIGABRT signal.");
+            unlink(socket_name);
             //remove(PID_FILE);
             exit (0);
             break;
         case SIGSEGV:
             print_msg("Received SIGSEGV signal.");
+            unlink(socket_name);
             //remove(PID_FILE);
             exit (0);
             break;
@@ -452,3 +470,44 @@ void print_msg (char *msg) {
    else { printf ("%s\n",msg);}
 }
 
+int control_socket ()
+{
+
+    int s_fd;  /* Server listen socket */
+    struct sockaddr_un uname;
+    struct sockaddr_un client_name;
+    socklen_t client_name_len;
+    int c_fd;
+    int length=-1;
+    char *command;
+
+    /* allocate memory for buffer */
+    command = malloc(BUF_SIZE);
+
+    /* Prepary server socket */
+    s_fd = socket(PF_LOCAL, SOCK_STREAM,0);
+    uname.sun_family = AF_LOCAL;
+    strcpy(uname.sun_path, socket_name);
+
+    /* Binding */
+    bind(s_fd, &uname, SUN_LEN(&uname));
+
+    /* Listen for connections */
+    listen (s_fd,QLEN_UNIX);
+    print_msg("Created control socket...");
+    while (1) {
+	/* accepting control connection */
+        c_fd = accept ( s_fd, &client_name, &client_name_len);
+        print_msg("Accepted control connection");
+	do {
+	/* repeately read from socket */
+        length = read (c_fd, command, BUF_SIZE );
+        print_msg (command);
+        if (strcmp(command,"quit")) length=0;
+	} while (length!=0);
+
+    close (c_fd);
+   }
+   free(command);
+   close (s_fd);
+}
