@@ -46,7 +46,7 @@ void * serverthread(void * parm);  /* thread function              */
 int s_empty();
 void signal_handler(int sig);
 void PrintUsage(int argc, char *argv[]); /* Print usage */
-//void print_msg (char *msg);
+void print_msg (char *msg);
 pthread_mutex_t  mut;              /* MUTEX for access to DATABASE */
 pthread_attr_t attr;               /* attibute var for all threads */
 size_t stacksize=32768;		   /* amount memory for thread     */
@@ -101,23 +101,23 @@ main (int argc, char *argv[])
             case 'd':
                 /* daemonize flag */
                 daemonize = 1;
-                printf ("Daemonizing...\n");
+                //printf ("Setting daemonizing...\n");
                 break;
             case 'p':
                 /* set TCP port */
                 port = atoi (optarg);
                 if (port==0) { port = PORT; }
-                printf ("Setting port %d\n",port);
+                //printf ("Setting port %d\n",port);
                 break;
             case 'n':
                 /* set network */
                 nw = optarg;
-                printf ("Setting network \"%s\"\n",nw);
+                //printf ("Setting network \"%s\"\n",nw);
                 break;
             case 'P':
                 /* set password of network */
                 pw = optarg;
-                printf ("Setting password \"%s\"\n",pw);
+                //printf ("Setting password \"%s\"\n",pw);
                 break;
             default:
                 PrintUsage(argc, argv);
@@ -130,21 +130,21 @@ main (int argc, char *argv[])
      if (port > 0)                          /* test for illegal value    */
                       sad.sin_port = htons((u_short)port);
      else {                                /* print error message and exit */
-                      fprintf (stderr, "bad port number %s/n",argv[1]);
+                      fprintf (stderr, "Error: bad port number %s/n",argv[1]);
                       exit (1);
      }
 
     /* Map TCP transport protocol name to protocol number */
 
      if ( ((int)(ptrp = getprotobyname("tcp"))) == 0)  {
-                     fprintf(stderr, "cannot map \"tcp\" to protocol number");
+                     fprintf(stderr, "Error: cannot map \"tcp\" to protocol number");
                      exit (1);
      }
 
      /* Create a socket */
      sd = socket (PF_INET, SOCK_STREAM, ptrp->p_proto);
      if (sd < 0) {
-                       fprintf(stderr, "socket creation failed\n");
+                       fprintf(stderr, "Error: socket creation failed\n");
                        exit(1);
      }
 
@@ -152,7 +152,7 @@ main (int argc, char *argv[])
     #ifdef SO_REUSEPORT
      int yes=1;
      if (setsockopt(sd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)) == -1) {
-        fprintf("setsockopt(SO_REUSEPORT) error\n");
+        fprintf("Error: setsockopt(SO_REUSEPORT)\n");
         close(sd);
 	exit(1);
     }
@@ -170,13 +170,13 @@ main (int argc, char *argv[])
 
      /* Bind a local address to the socket */
      if (bind(sd, (struct sockaddr *)&sad, sizeof (sad)) < 0) {
-                        fprintf(stderr,"bind failed\n");
+                        fprintf(stderr,"Error: bind to port failed\n");
                         exit(1);
      }
 
      /* Specify a size of request queue */
      if (listen(sd, QUEUE) < 0) {
-                        fprintf(stderr,"listen failed\n");
+                        fprintf(stderr,"Error: listen failed\n");
                          exit(1);
      }
 
@@ -187,13 +187,13 @@ main (int argc, char *argv[])
                             setlogmask(LOG_UPTO(LOG_DEBUG));
                             openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
                             }
-            else fprintf( stderr, "Server up and running.\n");
+            else fprintf( stderr, "Omega server up and running.\n");
 
     /* Our process ID and Session ID */
 
 
     if (daemonize==1) {
-        syslog(LOG_INFO, "starting the daemonizing process");
+        syslog(LOG_INFO, "Starting the daemonizing process");
 
         /* Fork off the parent process */
         pid = fork();
@@ -250,30 +250,30 @@ main (int argc, char *argv[])
 	 while (ci<0)
 	    {
 		ci=s_empty();
-		if ( ci <0 ) { print_msg("Thereis no empty threads"); sleep (10);}
+		if ( ci <0 ) { print_msg("Warning! There is no empty threads!"); sleep (10);}
 	    }
-         sprintf(msg,"SERVER: Waiting for connect to thread %d...",ci);
+         sprintf(msg,"Waiting for connect to thread number %d...",ci);
          print_msg(msg);
 
          if (  (OmegaThread[ci].sd=accept(sd, (struct sockaddr *)&OmegaThread[ci].ds, &alen)) < 0) {
-	                      sprintf(msg, "accept failed");
+	                      sprintf(msg, "Error! accept new connection failed");
 	                      print_msg(msg);
                           exit (1);
 	 }
 
-	if ( setsockopt (OmegaThread[ci].sd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof tv)) { print_msg("setsockopt error (SO_RCVTIMEO)"); }
+	if ( setsockopt (OmegaThread[ci].sd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof tv)) { print_msg("Error! setsockopt (SO_RCVTIMEO)"); }
 
 	/* locking thread to that connection and setting than he is busy */
         pthread_mutex_lock(&mut);
            OmegaThread[ci].st=1;
         pthread_mutex_unlock(&mut);
 
-	sprintf(msg,"Client connection from %s", inet_ntoa(OmegaThread[ci].ds.sin_addr));
+	sprintf(msg,"Connection from %s address.", inet_ntoa(OmegaThread[ci].ds.sin_addr));
 	print_msg(msg);
 
 	th_r = pthread_create(&OmegaThread[ci].td, &attr, serverthread, (void *) ci );
 	if ( th_r != 0 ) {
-	  sprintf (msg,"The system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process PTHREAD_THREADS_MAX would be exceeded.");
+	  sprintf (msg,"Warning! The system lacked the necessary resources to create another thread, or the system-imposed limit on the total number of threads in a process PTHREAD_THREADS_MAX would be exceeded.");
 	  print_msg(msg);
 	}
 
@@ -317,14 +317,14 @@ void * serverthread(void * parm)
    tsd = OmegaThread[c].sd;
    win2utf = iconv_open ("UTF-8", "CP1251"); // осуществляем перекодировку из CP1251 в кодировку локали (UTF-8)
    if (win2utf == (iconv_t) -1)
-         { sprintf (msg,"Can't converse from '%s' to wchar_t not available","CP1251"); print_msg(msg); }
+         { sprintf (msg,"Error! Can't converse from '%s' to wchar_t not available","CP1251"); print_msg(msg); }
 
 
    pthread_mutex_lock(&mut);
        tvisits=++visits;
    pthread_mutex_unlock(&mut);
 
-   sprintf(msg,"SERVER thread[%d] accepted connection number %d\n", c,tvisits);
+   sprintf(msg,"Thread[%d] accepted connection number %d\n", c,tvisits);
    print_msg(msg);
    /* code for processing client messages */
    while (r<BUF_SIZE-256) {
@@ -337,7 +337,7 @@ void * serverthread(void * parm)
                for(i=0; i<r1; i++) printf("%02x",(unsigned char)buffer[i]);
                printf ("\n");
 	          #endif
-      /* decoding message */
+            /* decoding message */
             while ( ParseBufferMessageNet(&s,&d,reply,buffer,r,&n)==0 ) { /* if message correct decoded */
                 r = r - n; /* determine tail undecoded message */
                 /* convert message from cp1251 to UTF8 */
@@ -349,14 +349,14 @@ void * serverthread(void * parm)
                 nconv = iconv (win2utf, &rreply, &sreply, &rconv, &sconv);
                 if ((nconv == (size_t) -1) & (errno == EINVAL)) { print_msg ("Error! Can't convert some input text"); }
                 *rconv='\0';
-                sprintf (msg,"Received msg:<SRC=%d DST=%d>%s [%d:%d]\n",s,d,conv,c,OmegaThread[c].st);
+                sprintf (msg,"Thread %d received msg from %d to %d:%s",c,s,d,conv);
                 print_msg(msg);
                 if ( OmegaThread[c].st==1 && NetAuth(nw,pw,conv) ==1 ) { /* check if client not auth */
                         pthread_mutex_lock(&mut);
                         OmegaThread[c].st=2;
                         OmegaThread[c].ad=s;
                         OmegaThread[c].nw=1;
-                        sprintf (msg,"Client auth successfull thread:%d. Address %d\n",c,s);
+                        sprintf (msg,"Thread %d client authentication successfull. Setting thread client address %d",c,s);
                         print_msg(msg);
                         pthread_mutex_unlock(&mut);
                         print_msg("Sending test msg");
@@ -364,7 +364,7 @@ void * serverthread(void * parm)
                         write(OmegaThread[c].sd,reply,l);
 
                 } else if (OmegaThread[c].st==1)  {
-                 sprintf (msg,"ERROR client auth thread %d\n",c);
+                 sprintf (msg,"Thread %d client authentication failed!",c);
                  print_msg(msg);
                  cs=3; /* setting status of closed socket */
                  break; /* exiting from loop of receive message */
@@ -377,17 +377,17 @@ void * serverthread(void * parm)
             }
         } else /* exit with timeout */
         {
-            sprintf (msg,"ERROR reading from socket thread %d (TIMEOUT)\n",c);
+            sprintf (msg,"Thread %d error reading from socket. Timeout or auth error",c);
             print_msg(msg);
             cs=1; /* setting status of closed socket */
             break; /* exiting from loop of receive message */
         }
    }
 
-   if (r>BUF_SIZE-256) { cs=2; sprintf (msg,"ERROR buffer overflow of thread %d. May be problem with connection?\n",c); print_msg(msg); }
+   if (r>BUF_SIZE-256) { cs=2; sprintf (msg,"Thread %d buffer overflow. May be problem with connection?",c); print_msg(msg); }
 
    /* end of code processing */
-   sprintf(msg,"SERVER thread[%d] closing connection number %d with status %d\n", c,tvisits,cs);
+   sprintf(msg,"Thread %d closing connection number %d with status %d", c,tvisits,cs);
    print_msg(msg);
    close(tsd);
 
