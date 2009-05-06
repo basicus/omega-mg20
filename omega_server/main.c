@@ -19,10 +19,6 @@
 #include <syslog.h>
 #include <stdio.h>
 #include "../mg20func.h"
-#define DAEMON_NAME "omega_server"
-#define PID_FILE "/var/run/omega_server.pid"
-#define CTL_SOCKET "/tmp/omega.ctl"
-#define QLEN_UNIX 10
 
 
 #define PORT         7701          /* default protocol port number */
@@ -33,6 +29,11 @@
 #define TIMEWAIT     30            /* TIME_WAIT interval           */
 #define TIMEOUT      240            /* timeout for receive msg      */
 #define BUF_SIZE     1024          /* size of receive buffer       */
+#define DAEMON_NAME "omega_server"
+#define PID_FILE "/tmp/omega_server.pid"
+#define CTL_SOCKET "/tmp/omega.ctl"
+#define QLEN_UNIX 10
+
 
 //# TODO! Add support for conversion to windows 1251 (from UTF8)
 //# TODO! Add support for mutex, when accessing array of sockets;
@@ -65,12 +66,13 @@ int daemonize;                     /* if 1 then daemonize, else console */
 int port = PORT;     /* use default port number   */
 char *msg;
 char* socket_name = CTL_SOCKET; /* UNIX socket name */
+char* pid_file = PID_FILE;     /* PID file */
+int      sd;                  /* socket descriptors */
 
 main (int argc, char *argv[])
 {
      struct   protoent  *ptrp;     /* pointer to a protocol table entry */
      struct   sockaddr_in sad;     /* structure to hold server's address */
-     int      sd;                  /* socket descriptors */
      int      alen;                /* length of address */
      int      th_r;		   /* Thread return */
      int      ci;		   /* current empty index */
@@ -135,6 +137,8 @@ main (int argc, char *argv[])
     }
 
 
+
+
     if (daemonize==1) {
         syslog(LOG_INFO, "Starting the daemonizing process");
 
@@ -149,21 +153,6 @@ main (int argc, char *argv[])
             exit(EXIT_SUCCESS);
         }
 
-        /*
-        int fpid = open(PID_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0640);
-        if ( fpid < 0) { print_msg("Eror! Failed to create PID file");
-            exit(EXIT_FAILURE);
-            } else {
-            char pid[6];
-            sprintf (pid, sizeof(pid), "%d\n", getpid());
-            int rpid = write (fpid, pid, strlen(pid));
-            if (rpid < 0) {
-                print_msg ("Error! Cant write to PID file.");
-                exit(EXIT_FAILURE);
-                }
-            }
-        close (fpid);
-        */
         /* Change the file mode mask */
         umask(0);
 
@@ -184,8 +173,22 @@ main (int argc, char *argv[])
         close(STDIN_FILENO);
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
-    }
 
+        int fpid = open(pid_file, O_WRONLY | O_CREAT , 0640);
+        if ( fpid < 0) { print_msg("Error! Failed to create PID file");
+            exit(EXIT_FAILURE);
+            } else {
+            char *s_pid;
+            s_pid = (char *) malloc(6);
+            sprintf (s_pid, "%d\n", getpid());
+            int rpid = write (fpid, s_pid, strlen(s_pid));
+            if (rpid < 0) {
+                print_msg ("Error! Cant write to PID file.");
+                exit(EXIT_FAILURE);
+                }
+            }
+        close (fpid);
+    }
 
      if (port > 0)                          /* test for illegal value    */
                       sad.sin_port = htons((u_short)port);
@@ -194,7 +197,7 @@ main (int argc, char *argv[])
                       exit (1);
      }
 
-    /* Map TCP transport protocol name to protocol number */
+     /* Map TCP transport protocol name to protocol number */
 
      if ( ((int)(ptrp = getprotobyname("tcp"))) == 0)  {
                      fprintf(stderr, "Error: cannot map \"tcp\" to protocol number");
@@ -425,37 +428,43 @@ void signal_handler(int sig) {
     switch(sig) {
         case SIGHUP:
             print_msg("Received SIGHUP signal.");
+            close(sd);
             unlink(socket_name);
-            //remove(PID_FILE);
+            unlink(pid_file);
             break;
         case SIGTERM:
             print_msg("Received SIGTERM signal.");
+            close(sd);
             unlink(socket_name);
-            //remove(PID_FILE);
+            unlink(pid_file);
             exit (0);
             break;
         case SIGQUIT:
             print_msg("Received SIGQUIT signal.");
+            close(sd);
             unlink(socket_name);
-            //remove(PID_FILE);
+            unlink(pid_file);
             exit (0);
             break;
         case SIGINT:
             print_msg("Received SIGINT signal.");
+            close(sd);
             unlink(socket_name);
-            //remove(PID_FILE);
+            unlink(pid_file);
             exit (0);
             break;
         case SIGABRT:
             print_msg("Received SIGABRT signal.");
+            close(sd);
             unlink(socket_name);
-            //remove(PID_FILE);
+            unlink(pid_file);
             exit (0);
             break;
         case SIGSEGV:
             print_msg("Received SIGSEGV signal.");
             unlink(socket_name);
-            //remove(PID_FILE);
+            close(sd);
+            unlink(pid_file);
             exit (0);
             break;
         default:
@@ -480,10 +489,13 @@ int control_socket ()
     int c_fd;
     int length=-1;
     char *command;
+    char *bcommand,*ecommand, *c_print,*cc;
+    int c_len,e_len;
 
     /* allocate memory for buffer */
     command = malloc(BUF_SIZE);
-
+    c_print = malloc(BUF_SIZE);
+    cc = malloc (BUF_SIZE);
     /* Prepary server socket */
     s_fd = socket(PF_LOCAL, SOCK_STREAM,0);
     uname.sun_family = AF_LOCAL;
@@ -498,14 +510,29 @@ int control_socket ()
     while (1) {
 	/* accepting control connection */
         c_fd = accept ( s_fd, &client_name, &client_name_len);
-        print_msg("Accepted control connection");
+        print_msg("Accepted control connection.");
 	do {
-	/* repeately read from socket */
-        length = read (c_fd, command, BUF_SIZE );
-        print_msg (command);
-        if (strcmp(command,"quit")) length=0;
+	    /* repeately read from socket */
+        length = read (c_fd, command, BUF_SIZE);
+        command[length]='\0';
+        e_len = 0;
+        bcommand = command;
+        ecommand = memchr(command,'\n',length);
+        while ( ecommand != NULL ) {
+            c_len = (ecommand - bcommand) + 1;
+            memcpy(c_print,bcommand,c_len);
+            c_print[c_len]='\0';
+            bcommand = &ecommand[1];
+            sprintf(cc,"Received command:%s",c_print);
+            print_msg(cc);
+            e_len+=c_len;
+            if ( e_len>= length) {
+                length=0;
+                ecommand=NULL;
+            } else ecommand = memchr(bcommand,'\n',length-e_len);
+        }
 	} while (length!=0);
-
+    print_msg("Closing control connection.");
     close (c_fd);
    }
    free(command);
