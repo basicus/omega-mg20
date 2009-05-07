@@ -33,6 +33,7 @@
 #define PID_FILE "/tmp/omega_server.pid"
 #define CTL_SOCKET "/tmp/omega.ctl"
 #define QLEN_UNIX 10
+#define SRV_ADDR 65534              /* server address on the network */
 
 
 //# TODO! Add support for conversion to windows 1251 (from UTF8)
@@ -54,13 +55,15 @@ void signal_handler(int sig);
 void PrintUsage(int argc, char *argv[]); /* Print usage */
 void print_msg (char *msg);
 int control_socket ();
+int isAlive (unsigned short d);
+
 pthread_mutex_t  mut;              /* MUTEX for access to DATABASE */
 pthread_attr_t attr;               /* attibute var for all threads */
 size_t stacksize=32768;		   /* amount memory for thread     */
 struct Omega OmegaThread[MAX_THREADS]; /* structure for new threads */
 char *nw=NULL;
 char *pw=NULL;
-unsigned short s_hub=65534;
+unsigned short s_hub=SRV_ADDR;
 int visits =  0;                   /* counter of client connections*/
 int daemonize;                     /* if 1 then daemonize, else console */
 int port = PORT;     /* use default port number   */
@@ -68,6 +71,8 @@ char *msg;
 char* socket_name = CTL_SOCKET; /* UNIX socket name */
 char* pid_file = PID_FILE;     /* PID file */
 int      sd;                  /* socket descriptors */
+int ctl_connected=0;          /* flag of active control connection */
+int c_fd; /* control connection file descriptor */
 
 main (int argc, char *argv[])
 {
@@ -318,11 +323,12 @@ void * serverthread(void * parm)
    size_t sreply,sconv=2*BUF_SIZE,nconv; /* conversion from cp1251 to utf8 */
    char *conv=(char *)  malloc(2*BUF_SIZE),*rconv; /* for conversion buffer */
    unsigned char buf[BUF_SIZE];
+   char *c_buf=(char *)malloc(300); /* buffer for control connection messages */
    unsigned char *buffer=(unsigned char*)&buf;
    unsigned short s;  /* src address */
    unsigned short d;  /* dst address */
    unsigned short r=0; /* counter of received buffer */
-   char *msg2="Sm>P=1?"; /* test message */
+   char *ver="version"; /* test message, version */
    int r1;          /* counter of current receive */
    int n;           /* tail */
    int l;
@@ -344,7 +350,13 @@ void * serverthread(void * parm)
    /* code for processing client messages */
    while (r<BUF_SIZE-256) {
        r1 =  read( tsd, buffer+r, 256 );
-       if ( r1 > 0 ) { /* received some portion of data */
+
+       if ( r1==1 && buffer[r]==0 ) { /* received KA packet */
+           sprintf(msg,"Thread %d received KA packet from %d", c, OmegaThread[c].ad);
+           print_msg(msg);
+           }
+
+       if ( r1 > 1 ) { /* received some portion of data and not KA */
 	          r = r +r1;
               #ifdef DEBUG
 	           int i;
@@ -354,30 +366,43 @@ void * serverthread(void * parm)
 	          #endif
             /* decoding message */
             while ( ParseBufferMessageNet(&s,&d,reply,buffer,r,&n)==0 ) { /* if message correct decoded */
-                r = r - n; /* determine tail undecoded message */
+                r = r - n; /* determine tail of undecoded message */
                 /* convert message from cp1251 to UTF8 */
                 sreply=strlen(reply);
                 rreply=reply;
                 rconv=conv;
                 sconv=2*BUF_SIZE;
-
                 nconv = iconv (win2utf, &rreply, &sreply, &rconv, &sconv);
                 if ((nconv == (size_t) -1) & (errno == EINVAL)) { print_msg ("Error! Can't convert some input text"); }
                 *rconv='\0';
-                sprintf (msg,"Thread %d received msg from %d to %d:%s",c,s,d,conv);
+                sprintf (msg,"Thread %d received msg from %d to %d:%s",c,s,d,conv); /* may be show if debug? */
                 print_msg(msg);
-                if ( OmegaThread[c].st==1 && NetAuth(nw,pw,conv) ==1 ) { /* check if client not auth */
-                        pthread_mutex_lock(&mut);
-                        OmegaThread[c].st=2;
-                        OmegaThread[c].ad=s;
-                        OmegaThread[c].nw=1;
-                        sprintf (msg,"Thread %d client authentication successfull. Setting thread client address %d",c,s);
-                        print_msg(msg);
-                        pthread_mutex_unlock(&mut);
-                        print_msg("Sending test msg");
-                        l=CreateTextMessageNet (&s_hub, &OmegaThread[c].ad, msg2,reply);
-                        write(OmegaThread[c].sd,reply,l);
+                /* Checks */
+                if ( OmegaThread[c].st==1 && NetAuth(nw,pw,conv) ==1 ) { /* check if client not auth-ed before  */
+                        if ( isAlive(s) ==-1 ) {
+                            pthread_mutex_lock(&mut); /* locking for a while */
+                            OmegaThread[c].st=2;
+                            OmegaThread[c].ad=s;
+                            OmegaThread[c].nw=1;
+                            pthread_mutex_unlock(&mut);
 
+                            sprintf (msg,"Thread %d client authentication successfull. Setting thread client address %d",c,s);
+                            print_msg(msg);
+
+                            if (ctl_connected==1) { /* if control connection alive - sending EVENT to it */
+                                sprintf (c_buf,"LOGON %d\n",OmegaThread[c].ad);
+                                write(c_fd,c_buf,strlen(c_buf));
+                            }
+
+                            print_msg("Sending version request command");
+                            l=CreateTextMessageNet (&s_hub, &OmegaThread[c].ad, ver,reply);
+                            write(OmegaThread[c].sd,reply,l);
+                        } else {
+                            sprintf (msg,"Thread %d client duplicate authorization, closing connection",c);
+                            print_msg(msg);
+                            cs=3; /* setting status of closed socket */
+                            break; /* exiting from loop of receive message */
+                        }
                 } else if (OmegaThread[c].st==1)  {
                  sprintf (msg,"Thread %d client authentication failed!",c);
                  print_msg(msg);
@@ -385,11 +410,24 @@ void * serverthread(void * parm)
                  break; /* exiting from loop of receive message */
                 }
 
+                if (OmegaThread[c].st==2) { /* Client already authenticated */
+                    if ( d == s_hub ) { /* message send to HUB (us), resending it to control channel */
+                        if ( ctl_connected ==1) {
+                        sprintf (c_buf,"RCV %d %s\n",OmegaThread[c].ad);
+                        write(c_fd,c_buf,strlen(c_buf));
+                        }
+                    } else if ( isAlive(d) >= 0 ) { /* Checking if device is connected and auth*/
+                        l=CreateTextMessageNet (&s, &d, conv,reply);
+                        write(OmegaThread[isAlive(d)].sd,reply,l);
+                    } else {
+                        sprintf (msg,"Thread %d warning, device address %d isn't connected",c,d);
+                        print_msg(msg);
+                    }
+                }
 
-                /* ... SOME code for processing message ... */
                 if ( r >0 ) {memcpy(buffer, buffer+n, r);} /* copy message from the end to begin */
                         else {memset(buffer,0x00,n);}
-            }
+                }
         } else /* exit with timeout */
         {
             sprintf (msg,"Thread %d error reading from socket. Timeout or auth error",c);
@@ -397,6 +435,7 @@ void * serverthread(void * parm)
             cs=1; /* setting status of closed socket */
             break; /* exiting from loop of receive message */
         }
+
    }
 
    if (r>BUF_SIZE-256) { cs=2; sprintf (msg,"Thread %d buffer overflow. May be problem with connection?",c); print_msg(msg); }
@@ -404,6 +443,10 @@ void * serverthread(void * parm)
    /* end of code processing */
    sprintf(msg,"Thread %d closing connection number %d with status %d", c,tvisits,cs);
    print_msg(msg);
+   if (ctl_connected==1) {
+                            sprintf (c_buf,"LOGOFF %d\n",OmegaThread[c].ad);
+                            write(c_fd,c_buf,strlen(c_buf));
+                            }
    close(tsd);
 
    pthread_mutex_lock(&mut);
@@ -412,6 +455,92 @@ void * serverthread(void * parm)
 
    pthread_exit(0);
 }
+
+int control_socket ()
+{
+
+    int s_fd;  /* Server listen socket */
+    struct sockaddr_un uname;
+    struct sockaddr_un client_name;
+    socklen_t client_name_len;
+    int length=-1;
+    char *command;
+    char *bcommand,*ecommand, *c_print,*cc,*t_msg,*s_buf;
+    int c_len,e_len;
+    int parsed; /* variable to hold number parsed */
+    unsigned short dst; /* dst address */
+    int l;
+
+    /* allocate memory for buffer */
+    command = (char *) malloc(BUF_SIZE);
+    c_print = (char *) malloc(BUF_SIZE);
+    cc = (char *) malloc (BUF_SIZE);
+    t_msg = (char *) malloc(256);
+    s_buf = (char *) malloc(256);
+
+    /* Prepary server socket */
+    s_fd = socket(PF_LOCAL, SOCK_STREAM,0);
+    uname.sun_family = AF_LOCAL;
+    strcpy(uname.sun_path, socket_name);
+
+    /* Binding */
+    bind(s_fd, &uname, SUN_LEN(&uname));
+
+    /* Listen for connections */
+    listen (s_fd,QLEN_UNIX);
+    print_msg("Created control socket...");
+    while (1) {
+	/* accepting control connection */
+        c_fd = accept ( s_fd, &client_name, &client_name_len);
+        print_msg("Accepted control connection.");
+        ctl_connected = 1; /* setting flag of control connection */
+	do {
+	    /* repeately read from socket */
+        length = read (c_fd, command, BUF_SIZE);
+        command[length]='\0';
+        e_len = 0;
+        bcommand = command;
+        ecommand = memchr(command,'\n',length);
+        while ( ecommand != NULL ) {
+            c_len = (ecommand - bcommand) + 1;
+            memcpy(c_print,bcommand,c_len);
+            c_print[c_len]='\0';
+            bcommand = &ecommand[1];
+            sprintf(cc,"Received command:%s",c_print);
+            print_msg(cc);
+
+            /* START of message process block */
+            if (c_print == "status")  { ; }
+            if (c_print == "version")  { ; }
+            if ( strncmp (c_print,"send ", 5) == 0 ) {  /* send message to address */
+                parsed = sscanf (c_print,"send %5hu %256s",&dst,t_msg);
+                if ( parsed == 2) {
+                    if ( isAlive(dst) >= 0 ) {
+                        sprintf(cc,"Sending message to %d device",dst);
+                        print_msg(cc);
+                        l=CreateTextMessageNet (&s_hub, &dst, t_msg,s_buf);
+                        write(OmegaThread[isAlive(dst)].sd,s_buf,l);
+                    } else {
+                        print_msg("Warning, device isn't registered");
+                    }
+                }
+            }
+            /* END of message process block */
+            e_len+=c_len;
+            if ( e_len>= length) {
+                length=0;
+                ecommand=NULL;
+            } else ecommand = memchr(bcommand,'\n',length-e_len);
+        }
+	} while (length!=0);
+    print_msg("Closing control connection.");
+    ctl_connected = 0;
+    close (c_fd);
+   }
+   free(command);
+   close (s_fd);
+}
+
 
 void PrintUsage(int argc, char *argv[]) {
     if (argc >=1) {
@@ -423,6 +552,13 @@ void PrintUsage(int argc, char *argv[]) {
     }
 }
 
+int isAlive (unsigned short d) {
+int i;
+ for (i = 0; i < MAX_THREADS; i++ ) {
+       if ( OmegaThread[i].st==2 && OmegaThread[i].ad==d ) return i;
+ }
+   return -1;
+}
 void signal_handler(int sig) {
 
     switch(sig) {
@@ -477,64 +613,4 @@ void signal_handler(int sig) {
 void print_msg (char *msg) {
  if (daemonize==1) { syslog(LOG_WARNING, "%s",msg); }
    else { printf ("%s\n",msg);}
-}
-
-int control_socket ()
-{
-
-    int s_fd;  /* Server listen socket */
-    struct sockaddr_un uname;
-    struct sockaddr_un client_name;
-    socklen_t client_name_len;
-    int c_fd;
-    int length=-1;
-    char *command;
-    char *bcommand,*ecommand, *c_print,*cc;
-    int c_len,e_len;
-
-    /* allocate memory for buffer */
-    command = malloc(BUF_SIZE);
-    c_print = malloc(BUF_SIZE);
-    cc = malloc (BUF_SIZE);
-    /* Prepary server socket */
-    s_fd = socket(PF_LOCAL, SOCK_STREAM,0);
-    uname.sun_family = AF_LOCAL;
-    strcpy(uname.sun_path, socket_name);
-
-    /* Binding */
-    bind(s_fd, &uname, SUN_LEN(&uname));
-
-    /* Listen for connections */
-    listen (s_fd,QLEN_UNIX);
-    print_msg("Created control socket...");
-    while (1) {
-	/* accepting control connection */
-        c_fd = accept ( s_fd, &client_name, &client_name_len);
-        print_msg("Accepted control connection.");
-	do {
-	    /* repeately read from socket */
-        length = read (c_fd, command, BUF_SIZE);
-        command[length]='\0';
-        e_len = 0;
-        bcommand = command;
-        ecommand = memchr(command,'\n',length);
-        while ( ecommand != NULL ) {
-            c_len = (ecommand - bcommand) + 1;
-            memcpy(c_print,bcommand,c_len);
-            c_print[c_len]='\0';
-            bcommand = &ecommand[1];
-            sprintf(cc,"Received command:%s",c_print);
-            print_msg(cc);
-            e_len+=c_len;
-            if ( e_len>= length) {
-                length=0;
-                ecommand=NULL;
-            } else ecommand = memchr(bcommand,'\n',length-e_len);
-        }
-	} while (length!=0);
-    print_msg("Closing control connection.");
-    close (c_fd);
-   }
-   free(command);
-   close (s_fd);
 }
