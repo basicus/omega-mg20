@@ -414,7 +414,7 @@ void * serverthread(void * parm)
                 }
 
                 if (OmegaThread[c].st==2) { /* Client already authenticated */
-                    print_msg("Client connected, now we decide to do some checks");
+                    //print_msg("Client connected, now we decide to do some checks");
                     if ( d == s_hub ) { /* message send to HUB (us), resending it to control channel */
                         if ( ctl_connected ==1) {
                         sprintf (c_buf,"RCV %d %s\n",OmegaThread[c].ad,conv);
@@ -474,6 +474,7 @@ void control_socket ()
     int parsed; /* variable to hold number parsed */
     unsigned short dst; /* dst address */
     int l;
+    int iclose=0;
 
     /* allocate memory for buffer */
     command = (char *) malloc(BUF_SIZE);
@@ -493,14 +494,21 @@ void control_socket ()
     /* Listen for connections */
     listen (s_fd,QLEN_UNIX);
     print_msg("Created control socket...");
-    while (1) {
+    iclose =0;
+    while (iclose==0) {
 	/* accepting control connection */
         c_fd = accept ( s_fd, &client_name, &client_name_len);
         print_msg("Accepted control connection.");
         ctl_connected = 1; /* setting flag of control connection */
-	do {
+
+	    do {
+
 	    /* repeately read from socket */
         length = read (c_fd, command, BUF_SIZE);
+
+        /*sprintf(cc,"Received command:%s, %d",command,length);
+        command[length]='\0';
+        print_msg(cc);*/
         command[length]='\0';
         e_len = 0;
         bcommand = command;
@@ -512,10 +520,8 @@ void control_socket ()
             bcommand = &ecommand[1];
             sprintf(cc,"Received command:%s",c_print);
             print_msg(cc);
-
             /* START of message process block */
-            if ( strcmp(c_print,"status") )  { ; }
-            if ( strcmp(c_print,"version") )  { ; }
+            if ( strcmp(c_print,"quit") )  { print_msg("Received quit command on control channel"); iclose=1; break; }
             if ( strncmp (c_print,"send ", 5) == 0 ) {  /* send message to address */
                 parsed = sscanf (c_print,"send %5hu %256s",&dst,t_msg);
                 if ( parsed == 2) {
@@ -536,7 +542,8 @@ void control_socket ()
                 ecommand=NULL;
             } else ecommand = memchr(bcommand,'\n',length-e_len);
         }
-	} while (length!=0);
+        } while (length!=0);
+
     print_msg("Closing control connection.");
     ctl_connected = 0;
     close (c_fd);

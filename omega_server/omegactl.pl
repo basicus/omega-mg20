@@ -1,14 +1,44 @@
 #!/usr/bin/perl -w
+# Omega console management client on the PERL
 use strict;
+use warnings;
+use threads;
+use threads::shared;
+use IO::Socket;
 
-# Omega client on the PERL
 
-use Socket;
-use IO::Handle;
+my $sock = new IO::Socket::UNIX( Peer => '/tmp/omega.ctl',Type => SOCK_STREAM ) or die $!;
 
-socket(TSOCK, PF_UNIX, SOCK_STREAM,0);
-connect(TSOCK, sockaddr_un("/tmp/omega.ctl")) or print("ERROR!\n");
+my $thr = threads->create(\&ReadConsole);
 
-while (defined(my $messg = <TSOCK>)) {
-        print $messg;
+my $messg;
+while () {
+    $messg = <$sock>;
+    if ( defined $messg ) {
+        print STDOUT $messg;
+        }
 }
+
+
+sub ReadConsole {
+    my $line="none";
+    while($line ne "quit"){
+    println(":>");
+    chomp($line=<STDIN>);
+    $sock->send("send $line\n");
+    print STDOUT ("Sent!!!\n");
+    }
+}
+
+print ("Exiting...\n");
+
+sub println{
+   if ($_[0] eq ":>"){
+         print STDOUT ":>";
+        }
+   else
+      {
+        print STDOUT "$_[0]\n";
+   }
+}
+                           
