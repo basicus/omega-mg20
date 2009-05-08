@@ -13,8 +13,8 @@ print TSOCK "Hello!\n";
 print TSOCK "quit1\n";
 print TSOCK "quit\n";
 print TSOCK "status\n";
-#while (defined(my $messg = <TSOCK>)) {
-#        print $messg;
+while (defined(my $messg = <TSOCK>)) {
+        print $messg;
 #	        print TSOCK "Hello server!";
 
-#			}
+}

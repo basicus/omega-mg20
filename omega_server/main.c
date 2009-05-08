@@ -54,7 +54,7 @@ int s_empty();
 void signal_handler(int sig);
 void PrintUsage(int argc, char *argv[]); /* Print usage */
 void print_msg (char *msg);
-int control_socket ();
+void control_socket ();
 int isAlive (unsigned short d);
 
 pthread_mutex_t  mut;              /* MUTEX for access to DATABASE */
@@ -351,7 +351,7 @@ void * serverthread(void * parm)
    while (r<BUF_SIZE-256) {
        r1 =  read( tsd, buffer+r, 256 );
 
-       if ( r1==1 && buffer[r]==0 ) { /* received KA packet */
+       if ( r1==1 ) { /* received KA packet */
            sprintf(msg,"Thread %d received KA packet from %d", c, OmegaThread[c].ad);
            print_msg(msg);
            }
@@ -397,6 +397,7 @@ void * serverthread(void * parm)
                             print_msg("Sending version request command");
                             l=CreateTextMessageNet (&s_hub, &OmegaThread[c].ad, ver,reply);
                             write(OmegaThread[c].sd,reply,l);
+                            break;
                         } else {
                             sprintf (msg,"Thread %d client duplicate authorization, closing connection",c);
                             print_msg(msg);
@@ -456,7 +457,7 @@ void * serverthread(void * parm)
    pthread_exit(0);
 }
 
-int control_socket ()
+void control_socket ()
 {
 
     int s_fd;  /* Server listen socket */
@@ -510,8 +511,8 @@ int control_socket ()
             print_msg(cc);
 
             /* START of message process block */
-            if (c_print == "status")  { ; }
-            if (c_print == "version")  { ; }
+            if ( strcmp(c_print,"status") )  { ; }
+            if ( strcmp(c_print,"version") )  { ; }
             if ( strncmp (c_print,"send ", 5) == 0 ) {  /* send message to address */
                 parsed = sscanf (c_print,"send %5hu %256s",&dst,t_msg);
                 if ( parsed == 2) {
