@@ -219,8 +219,8 @@ main (int argc, char *argv[])
      /* set sockopt for reuse PORT */
     #ifdef SO_REUSEPORT
      int yes=1;
-     if (setsockopt(sd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)) == -1) {
-        fprintf("Error: setsockopt(SO_REUSEPORT)\n");
+     if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
+        fprintf("Error: setsockopt(SO_REUSEADDR)\n");
         close(sd);
 	exit(1);
     }
@@ -264,6 +264,7 @@ main (int argc, char *argv[])
 
     /* Our process ID and Session ID */
 
+    //NetPassword (2200, 65534, "default", "cern");
      while (1) {
     	 ci = -1; /* init current empty index */
 	 /* select first empty thread id */
@@ -328,7 +329,7 @@ void * serverthread(void * parm)
    unsigned short s;  /* src address */
    unsigned short d;  /* dst address */
    unsigned short r=0; /* counter of received buffer */
-   char *ver="version"; /* test message, version */
+   char *ver="version",*v_req; /* test message, version */
    int r1;          /* counter of current receive */
    int n;           /* tail */
    int l;
@@ -340,6 +341,7 @@ void * serverthread(void * parm)
    if (win2utf == (iconv_t) -1)
          { sprintf (msg,"Error! Can't converse from '%s' to wchar_t not available","CP1251"); print_msg(msg); }
 
+    v_req = (char *) malloc(50);
 
    pthread_mutex_lock(&mut);
        tvisits=++visits;
@@ -351,7 +353,7 @@ void * serverthread(void * parm)
    while (r<BUF_SIZE-256) {
        r1 =  read( tsd, buffer+r, 256 );
 
-       if ( r1==1 ) { /* received KA packet */
+       if ( r1==1 && buffer[r]==0 && OmegaThread[c].st==2 ) { /* received KA packet */
            sprintf(msg,"Thread %d received KA packet from %d", c, OmegaThread[c].ad);
            print_msg(msg);
            }
@@ -394,9 +396,9 @@ void * serverthread(void * parm)
                                 write(c_fd,c_buf,strlen(c_buf));
                             }
 
-                            print_msg("Sending version request command");
-                            l=CreateTextMessageNet (&s_hub, &OmegaThread[c].ad, ver,reply);
-                            write(OmegaThread[c].sd,reply,l);
+                            print_msg("Sending \'version\' request command");
+                            l=CreateTextMessageNet (&s_hub, &OmegaThread[c].ad, ver,v_req);
+                            write(OmegaThread[c].sd,v_req,l);
                             break;
                         } else {
                             sprintf (msg,"Thread %d client duplicate authorization, closing connection",c);
@@ -412,9 +414,10 @@ void * serverthread(void * parm)
                 }
 
                 if (OmegaThread[c].st==2) { /* Client already authenticated */
+                    print_msg("Client connected, now we decide to do some checks");
                     if ( d == s_hub ) { /* message send to HUB (us), resending it to control channel */
                         if ( ctl_connected ==1) {
-                        sprintf (c_buf,"RCV %d %s\n",OmegaThread[c].ad);
+                        sprintf (c_buf,"RCV %d %s\n",OmegaThread[c].ad,conv);
                         write(c_fd,c_buf,strlen(c_buf));
                         }
                     } else if ( isAlive(d) >= 0 ) { /* Checking if device is connected and auth*/
@@ -505,7 +508,7 @@ void control_socket ()
         while ( ecommand != NULL ) {
             c_len = (ecommand - bcommand) + 1;
             memcpy(c_print,bcommand,c_len);
-            c_print[c_len]='\0';
+            c_print[c_len-1]='\0';
             bcommand = &ecommand[1];
             sprintf(cc,"Received command:%s",c_print);
             print_msg(cc);
@@ -522,7 +525,7 @@ void control_socket ()
                         l=CreateTextMessageNet (&s_hub, &dst, t_msg,s_buf);
                         write(OmegaThread[isAlive(dst)].sd,s_buf,l);
                     } else {
-                        print_msg("Warning, device isn't registered");
+                        print_msg("Warning, device isn't registered. Not sending");
                     }
                 }
             }
@@ -605,7 +608,7 @@ void signal_handler(int sig) {
             exit (0);
             break;
         default:
-            syslog(LOG_WARNING, "Unhandled signal (%d) %s", strsignal(sig));
+            syslog(LOG_WARNING, "Unhandled signal (%d)", strsignal(sig));
             break;
 
     }

@@ -45,6 +45,7 @@ main(int argc, char *argv[])
    int     n;                /* number of characters read           */
    char    buf[1000];        /* buffer for data from the server     */
 
+   char   auth[] = {0x02, 0x4d, 0x6c, 0x02, 0xfe, 0xff, 0x98, 0x08, 0x0e, 0x20, 0x64, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x20,0x63,0x65, 0x72, 0x6e, 0x00, 0x75, 0x83};
    memset((char *)&sad,0,sizeof(sad));  /* clear sockaddr structure */
    sad.sin_family = AF_INET;            /* set family to Internet   */
 
@@ -61,6 +62,7 @@ main(int argc, char *argv[])
           exit(1);
      }
    
+   //auth[5] = (unsigned char) random(255);
    if (argc > 1 ) host = argv[1];
    else host = localhost;
 
@@ -87,14 +89,22 @@ main(int argc, char *argv[])
      { fprintf( stderr, "connect failed\n");
        exit(1);
      }
+	
+	/* auth */
+	write(sd,auth,25);
+	sleep (1);
+	write(sd,auth,25); 
+
 
    n = recv(sd, buf, sizeof(buf), 0);
-   while(n > 0)
+/*   while(n > 0)
      { 
        buf[n] = '\0';
        fprintf( stderr, "CLIENT: %s", buf);
        n = recv(sd, buf, sizeof(buf), 0);
      }
+*/
+	sleep(10);
 
    closesocket(sd);
    exit(0);
