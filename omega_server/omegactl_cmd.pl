@@ -13,9 +13,9 @@ connect(TSOCK, sockaddr_un("/tmp/omega.ctl")) or print("ERROR!\n");
 if (scalar(@ARGV)==0) {print ("Error: Not enough parameters.\n"); exit (1);}
 
 switch($ARGV[0]){
-case "send" { print TSOCK "SEND $ARGV[1] $ARGV[2]\n"; }
-case "version" {print TSOCK "VERSION\n";}
-case "status" {print TSOCK "STATUS\n"; }
+case "send" { print TSOCK "SEND $ARGV[1] $ARGV[2]\nQUIT\n"; }
+case "version" {print TSOCK "VERSION\nQUIT\n";}
+case "status" {print TSOCK "STATUS\nQUIT\n"; }
 else {print "Usage: omegactl_cmd.pl <SEND|VERSION|STATUS> [ADDRESS] [MSG]";}
 	  }
 

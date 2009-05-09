@@ -25,9 +25,14 @@ sub ReadConsole {
     while($line ne "quit"){
     println(":>");
     chomp($line=<STDIN>);
-    $sock->send("send $line\n");
+    if ($line ne "quit" ) {
+			$sock->send("SEND $line\n");
+			}
+	else {		$sock->send("QUIT\n");
+	}
     print STDOUT ("Sent!!!\n");
     }
+    exit (0);
 }
 
 print ("Exiting...\n");

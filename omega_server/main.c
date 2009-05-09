@@ -495,7 +495,7 @@ void control_socket ()
     listen (s_fd,QLEN_UNIX);
     print_msg("Created control socket...");
     iclose =0;
-    while (iclose==0) {
+    while (1) {
 	/* accepting control connection */
         c_fd = accept ( s_fd, &client_name, &client_name_len);
         print_msg("Accepted control connection.");
@@ -521,9 +521,9 @@ void control_socket ()
             sprintf(cc,"Received command:%s",c_print);
             print_msg(cc);
             /* START of message process block */
-            if ( strcmp(c_print,"quit") )  { print_msg("Received quit command on control channel"); iclose=1; break; }
-            if ( strncmp (c_print,"send ", 5) == 0 ) {  /* send message to address */
-                parsed = sscanf (c_print,"send %5hu %256s",&dst,t_msg);
+            if ( strcmp(c_print,"QUIT")==0 )  { print_msg("Received quit command on control channel"); iclose=1; break; }
+            if ( strncmp (c_print,"SEND ", 5) == 0 ) {  /* send message to address */
+                parsed = sscanf (c_print,"SEND %5hu %256s",&dst,t_msg);
                 if ( parsed == 2) {
                     if ( isAlive(dst) >= 0 ) {
                         sprintf(cc,"Sending message to %d device",dst);
@@ -538,11 +538,10 @@ void control_socket ()
             /* END of message process block */
             e_len+=c_len;
             if ( e_len>= length) {
-                length=0;
                 ecommand=NULL;
             } else ecommand = memchr(bcommand,'\n',length-e_len);
         }
-        } while (length!=0);
+        } while (length!=0 || iclose==0);
 
     print_msg("Closing control connection.");
     ctl_connected = 0;
