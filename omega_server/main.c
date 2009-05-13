@@ -260,7 +260,7 @@ main (int argc, char *argv[])
                             setlogmask(LOG_UPTO(LOG_DEBUG));
                             openlog(DAEMON_NAME, LOG_CONS | LOG_NDELAY | LOG_PERROR | LOG_PID, LOG_USER);
                             }
-            else fprintf( stderr, "Omega server up and running.\n");
+    print_msg("Omega server up and running.");
 
     /* Our process ID and Session ID */
 
@@ -329,7 +329,7 @@ void * serverthread(void * parm)
    unsigned short s;  /* src address */
    unsigned short d;  /* dst address */
    unsigned short r=0; /* counter of received buffer */
-   char *ver="version",*v_req; /* test message, version */
+   char *ver="VERSION",*v_req; /* test message, version */
    int r1;          /* counter of current receive */
    int n;           /* tail */
    int l;
@@ -621,6 +621,14 @@ void signal_handler(int sig) {
 }
 
 void print_msg (char *msg) {
- if (daemonize==1) { syslog(LOG_WARNING, "%s",msg); }
-   else { printf ("%s\n",msg);}
+if (daemonize==1) { syslog(LOG_WARNING, "%s",msg); }
+   else {
+        time_t rawtime;
+        struct tm * timeinfo;
+        char *ctime=(char *) malloc(128);
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        strftime (ctime,128,"%d.%m.%Y %H:%M:%S",timeinfo);
+        printf ("%s %s\n",ctime,msg);
+       }
 }

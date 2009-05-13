@@ -894,11 +894,16 @@ table{font-size: 11}
 						</TR>
 						<TR valign=top>
 							<TD class="page_body_style">
-							    <div noWrap>Точка доступа, логин, пароль<br><span class="descr">логин и пароль если требуются через запятую</span></div><INPUT id="GPRS_Точка_доступа" type="text" size="60" maxlength="200"><br>
+								<div noWrap><INPUT type=checkbox id="Использование_GPRS"><LABEL for="Использование_GPRS"> Использование GPRS</LABEL></div>
+								<div noWrap>Точка доступа, логин, пароль<br><span class="descr">логин и пароль если требуются через запятую</span></div><INPUT id="GPRS_Точка_доступа" type="text" size="60" maxlength="200"><br>
+								<div noWrap>Имя виртуальной сети и пароль (через запятую)</div><INPUT id="Имя_вирт_сети_и_пароль" type="text" size="60" maxlength="200"><br>
 							    <br>
 							    <div noWrap>e-mail для отправки фотографий<br><span class="descr">один или несколько через запятую</span></div><INPUT id="EMAIL_Для_отправки_фотоснимков" type="text" size="60" maxlength="200"><br>
 							    <br>
 							    <div noWrap>Тема письма</div><INPUT id="Тема_письма" type="text" size="60" maxlength="200"><br>
+								<br>
+								<div noWrap><INPUT type=checkbox id="КА_Включен"><LABEL for="КА_Включен"> Отправка KeepAlive сообщений в RS232 и GPRS</LABEL></div>
+								
 							</TD>
 						</TR>
 					</TABLE>
