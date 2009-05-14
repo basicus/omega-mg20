@@ -25,7 +25,7 @@
 #define QUEUE        20            /* size of request queue        */
 #define NETWORK      "default"     /* default NETWORK name         */
 #define PASSWORD     "cern"        /* password for default NETWORK */
-#define MAX_THREADS  1000          /* maximum concurent threads    */
+#define MAX_THREADS  2000          /* maximum concurent threads    */
 #define TIMEWAIT     30            /* TIME_WAIT interval           */
 #define TIMEOUT      240            /* timeout for receive msg      */
 #define BUF_SIZE     1024          /* size of receive buffer       */
@@ -358,7 +358,7 @@ void * serverthread(void * parm)
            print_msg(msg);
            }
 
-       if ( r1 > 1 ) { /* received some portion of data and not KA */
+       if ( r1 >= 1 ) { /* received some portion of data and not KA */
 	          r = r +r1;
               #ifdef DEBUG
 	           int i;
@@ -505,7 +505,7 @@ void control_socket ()
 
 	    /* repeately read from socket */
         length = read (c_fd, command, BUF_SIZE);
-
+        if ( length == 0 ) { ctl_connected = 0; break;}
         /*sprintf(cc,"Received command:%s, %d",command,length);
         command[length]='\0';
         print_msg(cc);*/
