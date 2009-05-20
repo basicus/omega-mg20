@@ -353,12 +353,11 @@ void * serverthread(void * parm)
    while (r<BUF_SIZE-256) {
        r1 =  read( tsd, buffer+r, 256 );
 
-       if ( r1==1 && buffer[r]==0 && OmegaThread[c].st==2 ) { /* received KA packet */
+       if ( r1==1 && buffer[r]==0 && OmegaThread[c].st==2 )  { /* received KA packet */
            sprintf(msg,"Thread %d received KA packet from %d", c, OmegaThread[c].ad);
            print_msg(msg);
-           }
-
-       if ( r1 >= 1 ) { /* received some portion of data and not KA */
+            }
+            else if ( r1 > 1 ) { /* received some portion of data and not KA */
 	          r = r +r1;
               #ifdef DEBUG
 	           int i;
@@ -432,15 +431,14 @@ void * serverthread(void * parm)
                 if ( r >0 ) {memcpy(buffer, buffer+n, r);} /* copy message from the end to begin */
                         else {memset(buffer,0x00,n);}
                 }
-        } else /* exit with timeout */
-        {
+        }
+            else { /* exit with timeout */
             sprintf (msg,"Thread %d error reading from socket. Timeout or auth error",c);
             print_msg(msg);
             cs=1; /* setting status of closed socket */
             break; /* exiting from loop of receive message */
         }
-
-   }
+    }
 
    if (r>BUF_SIZE-256) { cs=2; sprintf (msg,"Thread %d buffer overflow. May be problem with connection?",c); print_msg(msg); }
 
