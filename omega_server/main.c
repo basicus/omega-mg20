@@ -474,6 +474,12 @@ void control_socket ()
     int l;
     int iclose=0;
 
+
+    if ( file_exists(socket_name) ==1 ) {
+        print_msg("Socket file exist. Can't create socket file. Exiting...");
+        exit(0);
+    }
+
     /* allocate memory for buffer */
     command = (char *) malloc(BUF_SIZE);
     c_print = (char *) malloc(BUF_SIZE);
@@ -481,7 +487,8 @@ void control_socket ()
     t_msg = (char *) malloc(256);
     s_buf = (char *) malloc(256);
 
-    /* Prepary server socket */
+
+    /* Prepare server socket */
     s_fd = socket(PF_LOCAL, SOCK_STREAM,0);
     uname.sun_family = AF_LOCAL;
     strcpy(uname.sun_path, socket_name);
@@ -630,3 +637,17 @@ if (daemonize==1) { syslog(LOG_WARNING, "%s",msg); }
         printf ("%s %s\n",ctime,msg);
        }
 }
+
+int file_exists (char * fileName)
+{
+   struct stat buf;
+   int i = stat ( fileName, &buf );
+     /* File found */
+     if ( i == 0 )
+     {
+       return 1;
+     }
+     return 0;
+
+}
+
