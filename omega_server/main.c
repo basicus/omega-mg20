@@ -484,7 +484,7 @@ void control_socket ()
     command = (char *) malloc(BUF_SIZE);
     c_print = (char *) malloc(BUF_SIZE);
     cc = (char *) malloc (BUF_SIZE);
-    t_msg = (char *) malloc(256);
+    t_msg = (char *) malloc(512);
     s_buf = (char *) malloc(256);
 
 
@@ -528,7 +528,7 @@ void control_socket ()
             /* START of message process block */
             if ( strcmp(c_print,"QUIT")==0 )  { print_msg("Received quit command on control channel"); iclose=1; break; }
             if ( strncmp (c_print,"SEND ", 5) == 0 ) {  /* send message to address */
-                parsed = sscanf (c_print,"SEND %5hu %[ a-zA-Z0-9+*/-]",&dst,t_msg); /* */
+                parsed = sscanf (c_print,"SEND %5hu %[ a-zA-Z0-9+*/_=-]",&dst,t_msg); /* */
                 print_msg(t_msg);
                 if ( parsed == 2) {
                     if ( isAlive(dst) >= 0 ) {
@@ -553,7 +553,7 @@ void control_socket ()
     ctl_connected = 0;
     close (c_fd);
    }
-   free(command);
+//   free(command);
    close (s_fd);
 }
 
