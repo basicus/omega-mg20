@@ -529,7 +529,7 @@ void control_socket ()
             if ( strcmp(c_print,"QUIT")==0 )  { print_msg("Received quit command on control channel"); iclose=1; break; }
             if ( strncmp (c_print,"SEND ", 5) == 0 ) {  /* send message to address */
                 parsed = sscanf (c_print,"SEND %5hu %[ a-zA-Z0-9+*/_=-]",&dst,t_msg); /* */
-                print_msg(t_msg);
+                //print_msg(t_msg);
                 if ( parsed == 2) {
                     if ( isAlive(dst) >= 0 ) {
                         sprintf(cc,"Sending message to %d device",dst);
