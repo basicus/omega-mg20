@@ -1,0 +1,43 @@
+<head>
+<script type="text/javascript" src="./jquery.js"></script>
+</head>
+
+$.post(url[, params[, callback]])
+$.get(url[, params[, callback]])
+
+
+$.post(
+  '/test.php',
+    {
+        action: 'news',
+	    id: 5
+	      },
+	        onGetAjaxs
+		);
+		function onGetAjax(data)
+		{
+		  // Получение данных, отправленных сервером
+		    alert(data);
+		    }
+		    
+		    
+		    <?php
+		    if($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+		    {
+		      // выполнение кода
+		      }
+		      ?>
+		      
+		      
+		      load(url);
+		      
+		      
+		      <?php
+		        echo 'Текст сформированный сервером';
+			?>
+			
+			
+			$('div#mydiv').load('test.php');
+			
+			
+			

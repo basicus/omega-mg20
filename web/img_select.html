@@ -1,0 +1,56 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+<title>Jquery</title>
+<script src="js/jquery.js"></script>
+<script src="js/jquery.imgareaselect.js"></script>
+<script language="JavaScript" type="text/javascript">
+var $x1, $y1, $x2, $y2, $w, $h;
+ 
+ function selectChange(img, selection)
+ {
+   $x1.text(selection.x1);
+   $y1.text(selection.y1);
+   $x2.text(selection.x2);
+   $y2.text(selection.y2);
+   $w.text(selection.width);
+   $h.text(selection.height);
+ }
+
+ $(document).ready(function(){
+   $x1 = $('#x1');
+   $y1 = $('#y1');
+   $x2 = $('#x2');
+   $y2 = $('#y2');
+   $w  = $('#w');
+   $h  = $('#h');
+  });
+
+ $(window).load(function(){
+   $('img#flower').imgAreaSelect({ selectionOpacity: 0, onSelectChange: selectChange });
+  });
+</script>
+</head>
+<body>
+<div style="float: left;">
+  <img id="flower" src="bee.jpg" />
+ </div>
+ <div style="float: left; margin-left: 10px;">
+  <p style="background: #eee; border: solid 1px #ddd; margin: 0; padding: 10px;">
+   <b>Координаты выделения:</b><br />
+
+   <b>X<sub>1</sub>:</b> <span id="x1"></span><br />
+   <b>Y<sub>1</sub>:</b> <span id="y1"></span><br />
+   <b>X<sub>2</sub>:</b> <span id="x2"></span><br />
+
+   <b>Y<sub>2</sub>:</b> <span id="y2"></span><br />
+   <br />
+   <b>Размеры выделения:</b><br />
+   <b>Width:</b> <span id="w"></span><br />
+   <b>Height:</b> <span id="h"></span>
+  </p>
+ </div>
+</div>
+</body>
+</html>
+
